@@ -132,7 +132,8 @@ module.exports = function (grunt) {
         javascriptsDir: '<%= yeoman.app %>/scripts',
         fontsDir: '<%= yeoman.app %>/styles/fonts',
         importPath: '<%= yeoman.app %>/components',
-        relativeAssets: true
+        raw: 'http_images_path = "/images/"\ngenerated_images_dir = ".tmp/images"\nhttp_generated_images_path = "/images/"',
+        relativeAssets: false
       },
       dist: {},
       server: {
@@ -171,6 +172,11 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.app %>/images',
           src: '{,*/}*.{png,jpg,jpeg}',
           dest: '<%= yeoman.dist %>/images'
+        }, {
+            expand: true,
+            cwd: '.tmp/images',
+            src: '{,*/}*.png',
+            dest: '<%= yeoman.dist %>/images'
         }]
       }
     },
