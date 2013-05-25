@@ -2,7 +2,7 @@ app = angular.module('UnionCarWebsiteApp', [])
 
 app.config ['$routeProvider', ($routeProvider) ->
 	$routeProvider.when '/',
-		templateUrl: 'views/main.html'
-		controller: 'MainCtrl'
+		templateUrl: 'views/carlist.html'
+		controller: 'CarListCtrl'
 	$routeProvider.otherwise
 		redirectTo: '/']
