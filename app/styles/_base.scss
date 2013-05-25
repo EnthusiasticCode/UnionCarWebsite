@@ -1,0 +1,41 @@
+html, body {
+	background: $primary-color;
+	height: 100%;
+	width: 100%;
+}
+
+a {
+	@include transition-property(color);
+	@include transition-duration(0.25s);
+}
+
+#site {
+	margin-top: $column-gutter;
+	margin-bottom: $column-gutter;
+}
+
+#page {
+	padding: $column-gutter/2 $column-gutter;
+	background: $page-color;
+}
+
+#page-header {
+	background: $primary-color;
+	padding-top: $column-gutter/2;
+	padding-bottom: $column-gutter/2;
+}
+
+#page-header-logo {
+	margin: 0;
+
+	.link {
+		@include global-sprite(logo);
+		background-size: global-sprite-width(logo)/2;
+		width: global-sprite-width(logo)/2;
+		height: global-sprite-height(logo)/2;
+
+		display: block;
+		overflow: hidden;
+		text-indent: -2000px;
+	}
+}
