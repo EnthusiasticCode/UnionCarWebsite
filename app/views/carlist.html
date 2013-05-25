@@ -1,5 +1,18 @@
-<ul class="carlist">
+<ul class="carlist content-box">
 	<li ng-repeat="car in cars" id="car-#{car.id}">
-		{{car.brand}}
+		<a href="" class="carlist-link">
+			<ul class="inline-list">
+				<li><div class="carlist-brand brand-{{car.brand|lowercase}} hide-for-small"></div></li>
+				<li><img class="carlist-image" src="http://placehold.it/200" ng-src="{{car.images[0]}}"></li>
+				<li><p class="carlist-title">
+					<span class="carlist-brand" ng-bind="car.brand">&ndash;</span>
+					/
+					<strong class="carlist-model" ng-bind="car.model">&ndash;</strong>
+				</p></li>
+				<li><p class="carlist-price">Km <strong ng-bind="car.km|number">&ndash;</strong></p></li>
+				<li><p class="carlist-price">anno <strong ng-bind="car.date|date:'MM/yyyy'">&ndash;</strong></p></li>
+				<li><p class="carlist-price">&euro; <strong ng-bind="car.price|number">&ndash;</strong></p></li>
+			</ul>
+		</a>
 	</li>
 </ul>

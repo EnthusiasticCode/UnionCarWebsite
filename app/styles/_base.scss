@@ -15,7 +15,7 @@ a {
 }
 
 #page {
-	padding: $column-gutter/2 $column-gutter;
+	padding: $column-gutter/2;
 	background: $page-color;
 }
 
@@ -23,7 +23,7 @@ a {
 	background: $primary-color;
 	padding-top: $column-gutter/2;
 	padding-bottom: $column-gutter/2;
-	margin-bottom: $column-gutter/2;
+	margin: 0 0 $column-gutter/2;
 }
 
 #page-header-logo {
@@ -38,5 +38,60 @@ a {
 		display: block;
 		overflow: hidden;
 		text-indent: -2000px;
+	}
+}
+
+.content-box {
+	border: 1px solid $secondary-color;
+	padding: $column-gutter/2;
+	background-color: white;
+}
+
+@import "brand/*.png";
+@include all-brand-sprites;
+
+ul.carlist {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	p {
+		font-weight: lighter;
+		font-size: 1.5em;
+		margin: 0 0 0 0.5em;
+	}
+
+	.carlist-link {
+		@include transition-property(background-color);
+		@include transition-duration(0.25s);
+		padding: $column-gutter/2;
+		display: block;
+
+		&:hover {
+			background-color: $secondary-color;
+		}
+	}
+
+	.inline-list {
+		margin: 0;
+		display: table;
+		width: 100%;
+
+		> li {
+			display: table-cell;
+			float: none;
+			vertical-align: middle;
+		}
+	}
+
+	.carlist-brand {
+		width: 50px;
+		height: 50px;
+		background-size: 50px;
+		margin-right: 0.5em;
+	}
+
+	.carlist-image {
+		width: 100px;
 	}
 }
