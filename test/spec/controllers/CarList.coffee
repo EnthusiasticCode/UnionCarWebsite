@@ -15,5 +15,5 @@ describe 'Controller: CarListCtrl', () ->
       $scope: scope
     }
 
-  it 'should attach a list of awesomeThings to the scope', () ->
-    expect(scope.awesomeThings.length).toBe 3;
+  it 'should attach a list of cars to the scope', () ->
+    expect(scope.cars.length).toBe 1;
