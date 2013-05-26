@@ -275,7 +275,7 @@ module.exports = function (grunt) {
     var done = this.async();
     grunt.util.spawn({
       cmd: 'appcfg.py',
-      args: ['update', 'dist'],
+      args: ['update', '.'],
       opts: {
         stdio: 'inherit'
       }
@@ -330,7 +330,6 @@ module.exports = function (grunt) {
     'htmlmin',
     'concat',
     'copy',
-    // 'cdnify',
     'ngmin',
     'uglify',
     'rev',
