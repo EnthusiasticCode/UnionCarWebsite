@@ -61,6 +61,14 @@ ul.carlist {
 		margin: 0 0 0 0.5em;
 	}
 
+	> li {
+		border-bottom: 1px solid $secondary-color;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
 	.carlist-link {
 		@include transition-property(background-color);
 		@include transition-duration(0.25s);
@@ -92,6 +100,7 @@ ul.carlist {
 	}
 
 	.carlist-image {
+		min-width: 80px;
 		width: 100px;
 	}
 }
