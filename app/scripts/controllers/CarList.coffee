@@ -20,7 +20,7 @@ angular.module('UnionCarWebsiteApp')
 				model: 'Testarossa',
 				km: 110000,
 				date: new Date(2003, 3),
-				price: 230000,
+				price: 20000,
 				images: [
 					'http://placehold.it/300&text=Ferrari'
 				]

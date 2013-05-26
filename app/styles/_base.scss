@@ -58,7 +58,7 @@ ul.carlist {
 	p {
 		font-weight: lighter;
 		font-size: 1.5em;
-		margin: 0 0 0 0.5em;
+		margin: 0 0.5em 0 0;
 	}
 
 	> li {
@@ -89,17 +89,30 @@ ul.carlist {
 			display: table-cell;
 			float: none;
 			vertical-align: middle;
+			width: 24%;
+
+			&.carlist-brand-col { width: 25%; }
+			&.carlist-image-col { width: 75%; text-align: center; }
+			&.carlist-title-col { width: 28%; }
+
+			@media only screen and (max-width: #{$small-screen}) {
+				&.carlist-brand-col,
+				&.carlist-date-col,
+				&.carlist-km-col {
+					display: none;
+				}
+			}
 		}
 	}
 
 	.carlist-brand-image {
-		width: 50px;
+		width: 30px;
 		height: 50px;
-		background-size: 50px;
-		margin-right: 0.5em;
+		background-size: 30px;
 	}
 
 	.carlist-image {
+		display: inline-block;
 		min-width: 80px;
 		width: 100px;
 	}

@@ -1,18 +1,38 @@
 <ul class="carlist content-box">
 	<li ng-repeat="car in cars" id="car-#{car.id}">
 		<a href="" class="carlist-link">
-			<ul class="inline-list">
-				<li><div class="carlist-brand-image brand-{{car.brand|lowercase}} hide-for-small"></div></li>
-				<li><img class="carlist-image" src="http://placehold.it/200" ng-src="{{car.images[0]}}"></li>
-				<li><p class="carlist-title">
-					<span class="carlist-brand" ng-bind="car.brand">&ndash;</span>
-					/
-					<strong class="carlist-model" ng-bind="car.model">&ndash;</strong>
-				</p></li>
-				<li><p class="carlist-price hide-for-small">Km <strong ng-bind="car.km|number">&ndash;</strong></p></li>
-				<li><p class="carlist-price hide-for-small">anno <strong ng-bind="car.date|date:'MM/yyyy'">&ndash;</strong></p></li>
-				<li><p class="carlist-price">&euro; <strong ng-bind="car.price|number">&ndash;</strong></p></li>
-			</ul>
+			<div class="row">
+				<div class="small-3 columns">
+					<ul class="inline-list">
+						<li class="carlist-brand-col">
+							<div class="carlist-brand-image brand-{{car.brand|lowercase}}"></div>
+						</li>
+						<li class="carlist-image-col">
+							<img class="carlist-image" src="http://placehold.it/200" ng-src="{{car.images[0]}}">
+						</li>
+					</ul>
+				</div>
+				<div class="small-9 columns">
+					<ul class="inline-list">
+						<li class="carlist-title-col">
+							<p class="carlist-title">
+								<span class="carlist-brand" ng-bind="car.brand">&ndash;</span>
+								/
+								<strong class="carlist-model" ng-bind="car.model">&ndash;</strong>
+							</p>
+						</li>
+						<li class="carlist-km-col">
+							<p class="carlist-km">Km <strong ng-bind="car.km|number">&ndash;</strong></p>
+						</li>
+						<li class="carlist-date-col">
+							<p class="carlist-date">anno <strong ng-bind="car.date|date:'MM/yyyy'">&ndash;</strong></p>
+						</li>
+						<li class="carlist-price-col">
+							<p class="carlist-price">&euro; <strong ng-bind="car.price|number">&ndash;</strong></p>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</a>
 	</li>
 </ul>
