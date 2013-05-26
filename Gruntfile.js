@@ -50,15 +50,13 @@ module.exports = function (grunt) {
         // Change this to '0.0.0.0' to access the server from outside.
         hostname: 'localhost'
       },
-      proxies: [
-        {
-            context: '/api',
-            host: 'localhost',
-            port: 8080,
-            https: false,
-            changeOrigin: false
-        }
-      ],
+      proxies: [{
+        context: '/api',
+        host: 'localhost',
+        port: 8080,
+        https: false,
+        changeOrigin: false
+      }],
       livereload: {
         options: {
           middleware: function (connect) {
@@ -298,7 +296,7 @@ module.exports = function (grunt) {
       opts: {
         stdio: 'inherit'
       }
-    }, function(error, result, code) {
+    }, function() {
     });
   });
 
