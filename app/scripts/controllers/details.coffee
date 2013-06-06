@@ -14,3 +14,8 @@ angular.module('UnionCarWebsiteApp')
 				'http://placehold.it/300&text=Ferrari'
 			]
 		}
+
+		$('.flexslider').flexslider({
+			animation: "slide",
+			controlNav: "thumbnails"
+		})

@@ -12,9 +12,3 @@ app.config ['$routeProvider', ($routeProvider) ->
 		controller: 'DetailsCtrl'
 	.otherwise
 		redirectTo: '/']
-
-$(window).load ->
-	$('.flexslider').flexslider({
-		animation: "slide",
-		controlNav: "thumbnails"
-	});
