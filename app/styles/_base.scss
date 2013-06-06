@@ -49,6 +49,12 @@ a {
 
 @import "brand/*.png";
 @include all-brand-sprites;
+.brand-image {
+	width: 30px;
+	height: 50px;
+	background-size: 30px;
+	margin: 0 auto;
+}
 
 ul.carlist {
 	margin: 0;
@@ -112,14 +118,56 @@ ul.carlist {
 		font-weight: 300;
 	}
 
-	.carlist-brand-image {
-		width: 30px;
-		height: 50px;
-		background-size: 30px;
-	}
-
 	.carlist-image {
 		display: inline-block;
 		max-height: 105px;
+	}
+}
+
+.car-details {
+	.car-details-header {
+		margin-bottom: 1em;
+
+		.button,
+		.title {
+			margin: 0;
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+		.button {
+			margin-right: 1em;
+		}
+	}
+
+	.title {
+		font-weight: 300;
+	}
+
+	.price-container p {
+		text-align: right;
+		font-weight: 300;
+	}
+
+	.details-list {
+		list-style: none;
+
+		> li {
+			@include grid-row();
+			margin-bottom: 0.5em;
+
+			> .detail-label {
+				@include grid-column(3);
+				margin-top: 0.15em;
+			}
+
+			> .detail-value {
+				@include grid-column(9);
+			}
+		}
+	}
+
+	.contact-button {
+		width: 100%;
 	}
 }

@@ -1,1 +1,50 @@
-<p>This is the details view.{{id}}</p>
+<article id="car-{{car.id}}" class="car-details">
+	<header class="car-details-header">
+		<a href="" class="secondary radius back button">back</a>
+		<h1 class="title">
+			<span class="brand" ng-bind="car.brand">&ndash;</span>
+			/
+			<strong class="model" ng-bind="car.model">&ndash;</strong>
+		</h1>
+	</header>
+	<div class="content-box">
+		<div class="row">
+			<div class="small-1 columns hide-for-small">
+				<div class="brand-image brand-{{car.brand|lowercase}}"></div>
+			</div>
+
+			<div class="small-12 large-5 columns">
+				<div class="description-container">
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+					quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+					consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+					cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+					proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+				<div class="price-container">
+					<p>Prezzo al pubblico <span class="price">&euro; <strong ng-bind="car.price|number">&ndash;</strong></span></p>
+				</div>
+				<ul class="details-list">
+					<li>
+						<div class="secondary radius label detail-label">Tipo</div>
+						<div class="detail-value">Coup&egrave;</div>
+					</li>
+					<li>
+						<div class="secondary radius label detail-label">Tipo</div>
+						<div class="detail-value">Coup&egrave;</div>
+					</li>
+					<li>
+						<div class="secondary radius label detail-label">Tipo</div>
+						<div class="detail-value">Coup&egrave;</div>
+					</li>
+				</ul>
+			</div>
+
+			<div class="small-12 large-6 columns">
+				<div class="slideshow"> TODO </div>
+				<a href="" class="radius button contact-button">Contattaci per informazioni su <span class="brand" ng-bind="car.brand">&ndash;</span> <strong class="model" ng-bind="car.model">&ndash;</strong></a>
+			</div>
+		</div> <!-- .row -->
+	</div> <!-- .content-box -->
+</article>
