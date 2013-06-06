@@ -171,3 +171,14 @@ ul.carlist {
 		width: 100%;
 	}
 }
+
+.flexslider {
+	@include box-shadow(none);
+	border: none;
+	background: none;
+	margin: 0 0 $column-gutter;
+}
+
+.flex-control-thumbs li {
+	padding-right: 5px;
+}
