@@ -128,15 +128,21 @@ ul.carlist {
 	.car-details-header {
 		margin-bottom: 1em;
 
-		.button,
+		.back.button,
 		.title {
 			margin: 0;
 			display: inline-block;
 			vertical-align: middle;
 		}
 
-		.button {
+		.back.button {
 			margin-right: 1em;
+
+			&:before {
+				@include css-triangle(0.5em, $body-font-color, right);
+				display: inline-block;
+				margin-left: -0.7em;
+			}
 		}
 	}
 
@@ -146,7 +152,11 @@ ul.carlist {
 
 	.price-container p {
 		text-align: right;
-		font-weight: 300;
+		font-weight: bold;
+
+		.price {
+			font-size: 1.5em;
+		}
 	}
 
 	.details-list {
