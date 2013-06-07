@@ -7,6 +7,19 @@ a {
 	@include transition-duration(0.25s);
 }
 
+$global-spacing: 1px;
+@import "global/*.png";
+@include all-global-sprites;
+
+@import "brand/*.png";
+@include all-brand-sprites;
+.brand-image {
+	width: 30px;
+	height: 50px;
+	background-size: 30px;
+	margin: 0 auto;
+}
+
 .view-animation-enter {
 	@include transition-property(all);
 	@include transition-duration(1s);
@@ -30,10 +43,51 @@ a {
 }
 
 #page-header {
+	position: relative;
 	background: $primary-color;
 	padding-top: $column-gutter/2;
 	padding-bottom: $column-gutter/2;
 	margin: 0 0 $column-gutter/2;
+
+	.global-building {
+		width: global-sprite-width(building);
+		height: global-sprite-height(building);
+		opacity: 0.2;
+		position: absolute;
+		right: 15%;
+		bottom: 0;
+		z-index: 0;
+	}
+
+	a.where-arrow {
+		position: relative;
+		display: inline-block;
+		color: #999;
+		float: right;
+		margin-top: global-sprite-height(logo)/2 - 20px;
+		margin-right: 42%;
+
+		&:hover {
+			color: $page-color;
+		}
+
+		&:after {
+			content: '';
+			@include global-sprite(where-arrow);
+			width: global-sprite-width(where-arrow);
+			height: global-sprite-height(where-arrow);
+			display: block;
+			position: absolute;
+			top: -1.1em;
+			right: -(global-sprite-width(where-arrow) + 5px);
+		}
+	}
+
+	.call-us.button {
+		float: right;
+		margin: 22px 0;
+		padding: 0.5em 2em;
+	}
 }
 
 #page-header-logo {
@@ -55,15 +109,6 @@ a {
 	border: 1px solid $secondary-color;
 	padding: $column-gutter/2;
 	background-color: white;
-}
-
-@import "brand/*.png";
-@include all-brand-sprites;
-.brand-image {
-	width: 30px;
-	height: 50px;
-	background-size: 30px;
-	margin: 0 auto;
 }
 
 ul.carlist {
