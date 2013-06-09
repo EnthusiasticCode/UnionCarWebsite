@@ -38,15 +38,24 @@ angular.module('UnionCarWebsiteApp')
 
 	$('.carlist-filter').select2
 		tokenSeparators: [",", " "]
-		escapeMarkup: (m) -> m
-		formatResult: (item) ->
-			# console.log item
-			item.text
-		formatSelection: (item) ->
-			item.text
-		# createSearchChoice: (item, data) ->
-		# 	console.log arguments
-		# 	return { id: term, text: term }
+		multiple: yes
+		query: (options) ->
+			options.callback
+				results: [
+					text: 'Marca'
+					children: [
+						{ id: 'Ferrari', text: 'Ferrari' }
+						{ id: 'BMW', text: 'BMW' } ]
+				]
+				more: no
+		createSearchChoice: (term) ->
+			{ id: term, text: term }
+		# escapeMarkup: (m) -> m
+		# formatResult: (item) ->
+		# 	# console.log item
+		# 	item.text
+		# formatSelection: (item) ->
+		# 	item.text
 	]
 
 # Italian translation for select2
