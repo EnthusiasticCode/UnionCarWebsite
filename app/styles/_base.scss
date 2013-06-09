@@ -111,7 +111,20 @@ $global-spacing: 1px;
 	background-color: white;
 }
 
-ul.carlist {
+.carlist-filter {
+	margin-bottom: $column-gutter/2;
+}
+
+.select2-search-choice-close {
+	top: 5px;
+}
+
+.select2-container-multi .select2-choices .select2-search-choice{
+	padding: 4px 5px 4px 18px;
+	margin: 8px 0 3px 5px;
+}
+
+.carlist {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -176,6 +189,11 @@ ul.carlist {
 	.carlist-image {
 		display: inline-block;
 		max-height: 105px;
+	}
+
+	.carlist-nothing-found {
+		text-align: center;
+		padding: $column-gutter/2;
 	}
 }
 
