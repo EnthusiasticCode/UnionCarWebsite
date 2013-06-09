@@ -27,35 +27,34 @@ angular.module('UnionCarWebsiteApp')
 		}
 		]
 
-	$scope.search = {}
-		# brand: ['Ferrari', 'bmw']
-		# price: [25000, 1000000]
+	$scope.filter =
+		predicates: []
+
 	$scope.carsFilterPredicate = (car) ->
-		return no if $scope.search.brand? and $scope.search.brand.indexOf(car.brand) < 0
-		return no if $scope.search.price? and not ($scope.search.price[0] <= car.price <= $scope.search.price[1])
-		return no if $scope.search.km? and not ($scope.search.km[0] <= car.km <= $scope.search.km[1])
+		# return no if $scope.search.brand? and $scope.search.brand.indexOf(car.brand) < 0
+		# return no if $scope.search.price? and not ($scope.search.price[0] <= car.price <= $scope.search.price[1])
+		# return no if $scope.search.km? and not ($scope.search.km[0] <= car.km <= $scope.search.km[1])
 		yes
 
-	$('.carlist-filter').select2
+	$('.carlist-filter').select2(
 		tokenSeparators: [",", " "]
 		multiple: yes
-		query: (options) ->
-			options.callback
-				results: [
-					text: 'Marca'
-					children: [
-						{ id: 'Ferrari', text: 'Ferrari' }
-						{ id: 'BMW', text: 'BMW' } ]
-				]
-				more: no
+		query: Select2.query.local([
+			text: 'Marca'
+			children: [
+				{ id: 'Marca:Ferrari', text: 'Ferrari' }
+				{ id: 'Marca:BMW', text: 'BMW' } ]
+		])
 		createSearchChoice: (term) ->
-			{ id: term, text: term }
-		# escapeMarkup: (m) -> m
+			term = term.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+			{ id: "text:#{term}", text: term }
+		escapeMarkup: (m) -> m
 		# formatResult: (item) ->
 		# 	# console.log item
 		# 	item.text
 		# formatSelection: (item) ->
 		# 	item.text
+		).on('change', (e) -> $scope.$apply(-> $scope.filter.predicates = e.val))
 	]
 
 # Italian translation for select2
