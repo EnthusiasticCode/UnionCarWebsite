@@ -46,7 +46,7 @@ angular.module('UnionCarWebsiteApp')
 				{ id: 'Marca:BMW', text: 'BMW' } ]
 		])
 		createSearchChoice: (term) ->
-			term = term.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+			term = $.fn.select2.defaults.escapeMarkup(term)
 			{ id: "text:#{term}", text: term }
 		escapeMarkup: (m) -> m
 		# formatResult: (item) ->
