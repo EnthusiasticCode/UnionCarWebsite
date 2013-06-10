@@ -271,30 +271,6 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('appengine-update', 'Deploy to App Engine', function() {
-    var done = this.async();
-    grunt.util.spawn({
-      cmd: 'appcfg.py',
-      args: ['update', '.'],
-      opts: {
-        stdio: 'inherit'
-      }
-    }, function(error, result, code) {
-      done(code === 0);
-    });
-  });
-
-  grunt.registerTask('appengine-dev-server', 'Start the App Engine dev server', function() {
-    grunt.util.spawn({
-      cmd: 'dev_appserver.py',
-      args: ['.'],
-      opts: {
-        stdio: 'inherit'
-      }
-    }, function() {
-    });
-  });
-
   grunt.renameTask('regarde', 'watch');
 
   grunt.registerTask('server', [
@@ -305,7 +281,6 @@ module.exports = function (grunt) {
     'livereload-start',
     'connect:livereload',
     'open',
-    'appengine-dev-server',
     'watch'
   ]);
 
@@ -334,11 +309,6 @@ module.exports = function (grunt) {
     'uglify',
     'rev',
     'usemin'
-  ]);
-
-  grunt.registerTask('deploy', [
-    'build',
-    'appengine-update'
   ]);
 
   grunt.registerTask('default', ['build']);
