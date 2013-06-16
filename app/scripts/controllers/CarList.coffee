@@ -28,13 +28,58 @@ angular.module('UnionCarWebsiteApp')
 		]
 
 	$scope.filter =
+		template: {}
 		predicates: []
 
+	$scope.$watch("filter.predicates", (newValue, oldValue) ->
+		template = {}
+		angular.forEach(newValue, (predicateString) ->
+			components = predicateString.split(":")
+			firstComponent = ->
+				components[0]
+			otherComponents = ->
+				components[1..].join(":")
+			if components.length == 0
+				return
+			else if components.length == 1
+				(template.texts or= []).push(firstComponent())
+			else if firstComponent() == "text"
+				(template.texts or= []).push(otherComponents())
+			else if firstComponent() == "brand"
+				(template.brands or= []).push(otherComponents())
+			else if firstComponent() == "minPrice"
+				minPrice = Number(otherComponents())
+				if (template.minPrice or 0) < minPrice
+					template.minPrice = minPrice
+			else if firstComponent() == "maxPrice"
+				maxPrice = Number(otherComponents())
+				if (template.maxPrice or Infinity) > maxPrice
+					template.maxPrice = maxPrice
+			else if firstComponent() == "minKm"
+				minKm = Number(otherComponents())
+				if (template.minKm or 0) < minKm
+					template.minKm = minKm
+			else if firstComponent() == "maxKm"
+				maxKm = Number(otherComponents())
+				if (template.maxKm or Infinity) > maxKm
+					template.maxKm = maxKm
+			)
+		$scope.filter.template = template
+		)
+
 	$scope.carsFilterPredicate = (car) ->
-		# return no if $scope.search.brand? and $scope.search.brand.indexOf(car.brand) < 0
-		# return no if $scope.search.price? and not ($scope.search.price[0] <= car.price <= $scope.search.price[1])
-		# return no if $scope.search.km? and not ($scope.search.km[0] <= car.km <= $scope.search.km[1])
-		yes
+		template = $scope.filter.template
+		if template.brands? and template.brands.indexOf(car.brand) < 0
+			return no
+		else if template.minPrice? and car.price < template.minPrice
+			return no
+		else if template.maxPrice? and car.price > template.maxPrice
+			return no
+		else if template.minKm? and car.km < template.minKm
+			return no
+		else if template.maxKm? and car.km > template.maxKm
+			return no
+		return yes
 
 	$('.carlist-filter').select2(
 		tokenSeparators: [",", " "]
@@ -42,8 +87,8 @@ angular.module('UnionCarWebsiteApp')
 		query: Select2.query.local([
 			text: 'Marca'
 			children: [
-				{ id: 'Marca:Ferrari', text: 'Ferrari' }
-				{ id: 'Marca:BMW', text: 'BMW' } ]
+				{ id: 'brand:Ferrari', text: 'Ferrari' }
+				{ id: 'brand:BMW', text: 'BMW' } ]
 		])
 		createSearchChoice: (term) ->
 			term = $.fn.select2.defaults.escapeMarkup(term)
