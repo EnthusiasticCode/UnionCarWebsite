@@ -1,3 +1,0 @@
-[submodule "backend/codeigniter"]
-	path = backend/codeigniter
-	url = https://github.com/EllisLab/CodeIgniter.git
