@@ -1,5 +1,8 @@
 package main
 
+// To build for server CGI with fish shell use:
+// begin; set -lx GOOS linux; set -lx GOARCH 386; go build api.go; end
+
 import (
 	"archive/zip"
 	"encoding/csv"
@@ -7,31 +10,30 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/http/cgi"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"database/sql"
 	_ "github.com/EnthusiasticCode/mysql"
 )
 
-// const (
-// 	zipPath         = "test/quattroruote/"
-// 	imagesPath      = "test/images/"
-// 	imagesExtension = ".jpg"
-// 	tableName       = "cars"
-// )
-
 // Config object
 type Config struct {
 	ZipPath                       string
+	CsvComma                      string
 	ImagesPath, ImagesExtension   string
 	DatabaseConnection, TableName string
 }
 
 var config = Config{
 	ZipPath:            "test/quattroruote/",
+	CsvComma:           ";",
 	ImagesPath:         "test/images/",
 	ImagesExtension:    ".jpg",
 	DatabaseConnection: "root:root@/unioncars",
@@ -117,12 +119,64 @@ func (c *Cars) loadAll() error {
 }
 
 func main() {
-	err := loadConfig(&config, "config.json")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
 
-	err = updateDatabase()
+	fmt.Println(rune("\t"[0]))
+
+	err := cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		// Update database if needed
+		err := loadConfig(&config, "config.json")
+		if err != nil {
+			io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+			return
+		}
+		err = updateDatabase()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
+		p := path.Clean(r.URL.Path)
+		encoder := json.NewEncoder(w)
+
+		// api/car
+		if m, err := path.Match("car", p); m && err == nil {
+			c := make(Cars, 0, 10)
+			err := c.loadAll()
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				return
+			}
+			err = encoder.Encode(c)
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				return
+			}
+			return
+		}
+
+		// api/car/<id>
+		if m, err := path.Match("car/*", p); m && err == nil {
+			id, err := strconv.Atoi(path.Base(p))
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				return
+			}
+			var c Car
+			err = c.get(id)
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				return
+			}
+			err = encoder.Encode(c)
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				return
+			}
+			return
+		}
+	})))
+	//
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -152,10 +206,17 @@ func updateDatabase() error {
 	if err != nil {
 		return err
 	}
+
+	// Early return if no file present
+	if len(infos) == 0 {
+		return nil
+	}
+
+	// Select most recent valid archive infos
 	sort.Sort(sort.Reverse(byModTime(infos)))
 	var info os.FileInfo
 	for _, info = range infos {
-		if strings.HasSuffix(info.Name(), ".zip") {
+		if strings.HasSuffix(info.Name(), ".zip") && !strings.HasPrefix(info.Name(), ".") {
 			break
 		}
 	}
@@ -166,6 +227,7 @@ func updateDatabase() error {
 		return err
 	}
 	defer archive.Close()
+	defer os.Remove(config.ZipPath + info.Name())
 
 	// Open database
 	db, err := sql.Open("mysql", config.DatabaseConnection)
@@ -196,7 +258,7 @@ func updateDatabase() error {
 
 			// Open CSV reader
 			c := csv.NewReader(ff)
-			c.Comma = ';'
+			c.Comma = rune(config.CsvComma[0])
 			c.TrimLeadingSpace = true
 			rs, err := c.ReadAll()
 			if err != nil {

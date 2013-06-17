@@ -1,5 +1,6 @@
 {
 	"ZipPath": "test/quattroruote/",
+	"CsvComma": ";",
 	"ImagesPath": "test/images/",
 	"ImagesExtension": ".jpg",
 	"DatabaseConnection": "root:root@/unioncars",
