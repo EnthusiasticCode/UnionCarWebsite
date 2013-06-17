@@ -117,8 +117,15 @@ func (c *Cars) loadAll() error {
 }
 
 func main() {
-	loadConfig(&config, "config.json")
-	updateDatabase()
+	err := loadConfig(&config, "config.json")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	err = updateDatabase()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 // Load a json configuration file structured as a Config struct
@@ -139,12 +146,11 @@ func loadConfig(c *Config, path string) error {
 // Search the most recently added zip file in config.ZipPath,
 // extracts any image (keeping the path) with config.ImagesExtension in config.ImagesPath
 // then read CSV files and replaces database content with the CSV content.
-func updateDatabase() {
+func updateDatabase() error {
 	// Search for zip file
 	infos, err := ioutil.ReadDir(config.ZipPath)
 	if err != nil {
-		fmt.Println("Error reading dir: " + err.Error())
-		return
+		return err
 	}
 	sort.Sort(sort.Reverse(byModTime(infos)))
 	var info os.FileInfo
@@ -157,24 +163,21 @@ func updateDatabase() {
 	// Unzip archive
 	archive, err := zip.OpenReader(config.ZipPath + info.Name())
 	if err != nil {
-		fmt.Println("Error reading zip file [" + config.ZipPath + info.Name() + "]: " + err.Error())
-		return
+		return err
 	}
 	defer archive.Close()
 
 	// Open database
 	db, err := sql.Open("mysql", config.DatabaseConnection)
 	if err != nil {
-		fmt.Println("Error DB opening: " + err.Error())
-		return
+		return err
 	}
 	defer db.Close()
 
 	// Drop old table
 	_, err = db.Exec("TRUNCATE TABLE " + config.TableName)
 	if err != nil {
-		fmt.Println("Error truncating DB table: " + err.Error())
-		return
+		return err
 	}
 
 	// Reading files in archive
@@ -188,8 +191,7 @@ func updateDatabase() {
 			// Reading CSV file
 			ff, err := f.Open()
 			if err != nil {
-				fmt.Println("Error reading CSV file [" + f.Name + "]: " + err.Error())
-				return
+				return err
 			}
 
 			// Open CSV reader
@@ -198,8 +200,7 @@ func updateDatabase() {
 			c.TrimLeadingSpace = true
 			rs, err := c.ReadAll()
 			if err != nil {
-				fmt.Println("Error reading CSV content: " + err.Error())
-				return
+				return err
 			}
 
 			// Convert csv to sql
@@ -220,28 +221,26 @@ func updateDatabase() {
 			if len(dir) > 0 {
 				err = os.MkdirAll(config.ImagesPath+filepath.Dir(f.Name), os.FileMode(0777))
 				if err != nil {
-					fmt.Println("Error creating directory for images: " + err.Error())
-					return
+					return err
 				}
 			}
 
 			// Extract image
 			ff, err := f.Open()
 			if err != nil {
-				fmt.Println("Error reading image file [" + f.Name + "]: " + err.Error())
-				return
+				return err
 			}
 			dest, err := os.Create(config.ImagesPath + f.Name)
 			if err != nil {
-				fmt.Println("Error creating new image file [" + f.Name + "]: " + err.Error())
-				return
+				return err
 			}
 			_, err = io.Copy(dest, ff)
 			if err != nil {
-				fmt.Println("Error unzipping image file [" + f.Name + "]: " + err.Error())
-				return
+				return err
 			}
 			ff.Close()
 		}
 	}
+
+	return nil
 }
