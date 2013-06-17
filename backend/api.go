@@ -3,6 +3,7 @@ package main
 import (
 	"archive/zip"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,25 +16,40 @@ import (
 	_ "github.com/EnthusiasticCode/mysql"
 )
 
-const (
-	zipPath         = "test/quattroruote/"
-	imagesPath      = "test/images/"
-	imagesExtension = ".jpg"
-	tableName       = "cars"
-)
+// const (
+// 	zipPath         = "test/quattroruote/"
+// 	imagesPath      = "test/images/"
+// 	imagesExtension = ".jpg"
+// 	tableName       = "cars"
+// )
+
+// Config object
+type Config struct {
+	ZipPath                       string
+	ImagesPath, ImagesExtension   string
+	DatabaseConnection, TableName string
+}
+
+var config = Config{
+	ZipPath:            "test/quattroruote/",
+	ImagesPath:         "test/images/",
+	ImagesExtension:    ".jpg",
+	DatabaseConnection: "root:root@/unioncars",
+	TableName:          "cars",
+}
 
 // os.FileInfo sorter by ModTime
-type ByModTime []os.FileInfo
+type byModTime []os.FileInfo
 
-func (i ByModTime) Len() int {
+func (i byModTime) Len() int {
 	return len(i)
 }
 
-func (i ByModTime) Swap(a, b int) {
+func (i byModTime) Swap(a, b int) {
 	i[a], i[b] = i[b], i[a]
 }
 
-func (i ByModTime) Less(a, b int) bool {
+func (i byModTime) Less(a, b int) bool {
 	return i[a].ModTime().Before(i[b].ModTime())
 }
 
@@ -45,17 +61,32 @@ func (i ByModTime) Less(a, b int) bool {
 // type Cars []Car
 
 func main() {
+	loadConfig(&config, "config.json")
 	updateDatabase()
+}
+
+func loadConfig(c *Config, path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	dec := json.NewDecoder(f)
+	if err = dec.Decode(&c); err != nil && err != io.EOF {
+		return err
+	}
+	return nil
 }
 
 func updateDatabase() {
 	// Search for zip file
-	infos, err := ioutil.ReadDir(zipPath)
+	infos, err := ioutil.ReadDir(config.ZipPath)
 	if err != nil {
 		fmt.Println("Error reading dir: " + err.Error())
 		return
 	}
-	sort.Sort(sort.Reverse(ByModTime(infos)))
+	sort.Sort(sort.Reverse(byModTime(infos)))
 	var info os.FileInfo
 	for _, info = range infos {
 		if strings.HasSuffix(info.Name(), ".zip") {
@@ -64,15 +95,15 @@ func updateDatabase() {
 	}
 
 	// Unzip archive
-	archive, err := zip.OpenReader(zipPath + info.Name())
+	archive, err := zip.OpenReader(config.ZipPath + info.Name())
 	if err != nil {
-		fmt.Println("Error reading zip file [" + zipPath + info.Name() + "]: " + err.Error())
+		fmt.Println("Error reading zip file [" + config.ZipPath + info.Name() + "]: " + err.Error())
 		return
 	}
 	defer archive.Close()
 
 	// Open database
-	db, err := sql.Open("mysql", "root:root@/unioncars")
+	db, err := sql.Open("mysql", config.DatabaseConnection)
 	if err != nil {
 		fmt.Println("Error DB opening: " + err.Error())
 		return
@@ -80,7 +111,7 @@ func updateDatabase() {
 	defer db.Close()
 
 	// Drop old table
-	_, err = db.Exec("TRUNCATE TABLE " + tableName)
+	_, err = db.Exec("TRUNCATE TABLE " + config.TableName)
 	if err != nil {
 		fmt.Println("Error truncating DB table: " + err.Error())
 		return
@@ -122,12 +153,12 @@ func updateDatabase() {
 				}
 			}
 			ff.Close()
-		} else if strings.HasSuffix(f.Name, imagesExtension) {
+		} else if strings.HasSuffix(f.Name, config.ImagesExtension) {
 
 			// Create direcotry
 			dir := filepath.Dir(f.Name)
 			if len(dir) > 0 {
-				err = os.MkdirAll(imagesPath+filepath.Dir(f.Name), os.FileMode(0777))
+				err = os.MkdirAll(config.ImagesPath+filepath.Dir(f.Name), os.FileMode(0777))
 				if err != nil {
 					fmt.Println("Error creating directory for images: " + err.Error())
 					return
@@ -140,7 +171,7 @@ func updateDatabase() {
 				fmt.Println("Error reading image file [" + f.Name + "]: " + err.Error())
 				return
 			}
-			dest, err := os.Create(imagesPath + f.Name)
+			dest, err := os.Create(config.ImagesPath + f.Name)
 			if err != nil {
 				fmt.Println("Error creating new image file [" + f.Name + "]: " + err.Error())
 				return

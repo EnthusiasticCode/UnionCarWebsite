@@ -1,0 +1,7 @@
+{
+	"ZipPath": "test/quattroruote/",
+	"ImagesPath": "test/images/",
+	"ImagesExtension": ".jpg",
+	"DatabaseConnection": "root:root@/unioncars",
+	"TableName": "cars"
+}
