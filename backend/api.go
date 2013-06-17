@@ -53,18 +53,75 @@ func (i byModTime) Less(a, b int) bool {
 	return i[a].ModTime().Before(i[b].ModTime())
 }
 
-// type Car struct {
-// 	Id    int
-// 	Brand string
-// }
+// Car row in database
+type Car struct {
+	Id    int
+	Brand string
+}
 
-// type Cars []Car
+func (car Car) get(id int) error {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM ? WHERE id=?", config.TableName, id)
+	if err != nil {
+		return err
+	}
+
+	if rows.Next() {
+		err = rows.Scan(
+			&car.Id,
+			&car.Brand,
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Cars collection in database
+type Cars []Car
+
+func (c *Cars) loadAll() error {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM ?", config.TableName)
+	if err != nil {
+		return err
+	}
+
+	cars := make(Cars, 0, 10)
+	for rows.Next() {
+		car := Car{}
+		err = rows.Scan(
+			&car.Id,
+			&car.Brand,
+		)
+		if err != nil {
+			return err
+		}
+		cars = append(cars, car)
+	}
+
+	c = &cars
+	return nil
+}
 
 func main() {
 	loadConfig(&config, "config.json")
 	updateDatabase()
 }
 
+// Load a json configuration file structured as a Config struct
 func loadConfig(c *Config, path string) error {
 	f, err := os.Open(path)
 	if err != nil {
@@ -79,6 +136,9 @@ func loadConfig(c *Config, path string) error {
 	return nil
 }
 
+// Search the most recently added zip file in config.ZipPath,
+// extracts any image (keeping the path) with config.ImagesExtension in config.ImagesPath
+// then read CSV files and replaces database content with the CSV content.
 func updateDatabase() {
 	// Search for zip file
 	infos, err := ioutil.ReadDir(config.ZipPath)
