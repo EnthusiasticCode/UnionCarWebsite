@@ -120,8 +120,6 @@ func (c *Cars) loadAll() error {
 
 func main() {
 
-	fmt.Println(rune("\t"[0]))
-
 	err := cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -133,7 +131,7 @@ func main() {
 		}
 		err = updateDatabase()
 		if err != nil {
-			fmt.Println(err.Error())
+			io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
 		}
 
 		p := path.Clean(r.URL.Path)
@@ -176,9 +174,16 @@ func main() {
 			return
 		}
 	})))
-	//
+	// On error run locally
 	if err != nil {
-		fmt.Println(err.Error())
+		err := loadConfig(&config, "config.json")
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		err = updateDatabase()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	}
 }
 
@@ -259,6 +264,7 @@ func updateDatabase() error {
 			// Open CSV reader
 			c := csv.NewReader(ff)
 			c.Comma = rune(config.CsvComma[0])
+			c.FieldsPerRecord = -1
 			c.TrimLeadingSpace = true
 			rs, err := c.ReadAll()
 			if err != nil {
