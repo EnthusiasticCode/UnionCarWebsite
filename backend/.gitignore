@@ -2,3 +2,4 @@ pkg/
 src/
 test/
 config.json
+log.txt

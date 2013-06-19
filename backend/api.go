@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cgi"
 	"os"
@@ -23,6 +24,11 @@ import (
 	_ "github.com/EnthusiasticCode/mysql"
 )
 
+const (
+	logFileName  = "log.txt"
+	lockFileName = "update.lock"
+)
+
 // Config object
 type Config struct {
 	ZipPath                       string
@@ -31,14 +37,17 @@ type Config struct {
 	DatabaseConnection, TableName string
 }
 
-var config = Config{
-	ZipPath:            "test/quattroruote/",
-	CsvComma:           ";",
-	ImagesPath:         "test/images/",
-	ImagesExtension:    ".jpg",
-	DatabaseConnection: "root:root@/unioncars",
-	TableName:          "cars",
-}
+var (
+	config = Config{
+		ZipPath:            "test/quattroruote/",
+		CsvComma:           ";",
+		ImagesPath:         "test/images/",
+		ImagesExtension:    ".jpg",
+		DatabaseConnection: "root:root@/unioncars",
+		TableName:          "cars",
+	}
+	logger *log.Logger
+)
 
 // os.FileInfo sorter by ModTime
 type byModTime []os.FileInfo
@@ -119,20 +128,24 @@ func (c *Cars) loadAll() error {
 }
 
 func main() {
+	// Open the global logger
+	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0660)
+	if err != nil {
+		return // cannot open log file, abort
+	}
+	defer logFile.Close()
+	logger = log.New(logFile, "", log.Ldate|log.Ltime|log.Lshortfile)
 
-	err := cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Load global configuration
+	if err = loadConfig(&config, "config.json"); err != nil {
+		logger.Fatalln(err)
+	}
+
+	err = cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		// Update database if needed
-		err := loadConfig(&config, "config.json")
-		if err != nil {
-			io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-			return
-		}
-		err = updateDatabase()
-		if err != nil {
-			io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-		}
+		go updateIfNeeded()
 
 		p := path.Clean(r.URL.Path)
 		encoder := json.NewEncoder(w)
@@ -140,15 +153,13 @@ func main() {
 		// api/car
 		if m, err := path.Match("car", p); m && err == nil {
 			c := make(Cars, 0, 10)
-			err := c.loadAll()
-			if err != nil {
+			if err := c.loadAll(); err != nil {
 				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				return
+				logger.Fatalln(err)
 			}
-			err = encoder.Encode(c)
-			if err != nil {
+			if err = encoder.Encode(c); err != nil {
 				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				return
+				logger.Fatalln(err)
 			}
 			return
 		}
@@ -158,32 +169,25 @@ func main() {
 			id, err := strconv.Atoi(path.Base(p))
 			if err != nil {
 				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				return
+				logger.Fatalln(err)
 			}
 			var c Car
 			err = c.get(id)
 			if err != nil {
 				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				return
+				logger.Fatalln(err)
 			}
 			err = encoder.Encode(c)
 			if err != nil {
 				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				return
+				logger.Fatalln(err)
 			}
 			return
 		}
 	})))
 	// On error run locally
 	if err != nil {
-		err := loadConfig(&config, "config.json")
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		err = updateDatabase()
-		if err != nil {
-			fmt.Println(err.Error())
-		}
+		updateIfNeeded()
 	}
 }
 
@@ -202,10 +206,29 @@ func loadConfig(c *Config, path string) error {
 	return nil
 }
 
+func updateIfNeeded() {
+	// Managin lock via file
+	lockFile, err := os.OpenFile(lockFileName, os.O_CREATE|os.O_EXCL, 0660)
+	if err != nil {
+		return // someone else is already updating the database
+	}
+	defer func() {
+		lockFile.Close()
+		os.Remove(lockFileName)
+	}()
+
+	// Updating database
+	if err = updateDatabase(); err != nil {
+		logger.Println(err)
+		return
+	}
+}
+
 // Search the most recently added zip file in config.ZipPath,
 // extracts any image (keeping the path) with config.ImagesExtension in config.ImagesPath
 // then read CSV files and replaces database content with the CSV content.
 func updateDatabase() error {
+
 	// Search for zip file
 	infos, err := ioutil.ReadDir(config.ZipPath)
 	if err != nil {
@@ -214,10 +237,11 @@ func updateDatabase() error {
 
 	// Early return if no file present
 	if len(infos) == 0 {
-		return nil
+		return err
 	}
 
 	// Select most recent valid archive infos
+	// TODO may be better to use file name instead
 	sort.Sort(sort.Reverse(byModTime(infos)))
 	var info os.FileInfo
 	for _, info = range infos {
