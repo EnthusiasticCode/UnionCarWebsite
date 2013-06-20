@@ -50,7 +50,6 @@ $global-spacing: 1px;
 	color: white;
 	text-align: center;
 	padding: $column-gutter 0;
-	font-weight: 300;
 	font-size: 0.7em;
 	opacity: 0.7;
 }
@@ -66,49 +65,28 @@ $global-spacing: 1px;
 
 #page-header {
 	position: relative;
-	background: $primary-color;
+	background: $primary-color url(../images/bg/bg1.jpg);
 	padding-top: $column-gutter/2;
 	padding-bottom: $column-gutter/2;
 	margin: 0 0 $column-gutter/2;
-
-	.global-building {
-		width: global-sprite-width(building);
-		height: global-sprite-height(building);
-		opacity: 0.2;
-		position: absolute;
-		right: 15%;
-		bottom: 0;
-		z-index: 0;
-	}
-
-	a.where-arrow {
-		position: relative;
-		display: inline-block;
-		color: #999;
-		float: right;
-		margin-top: global-sprite-height(logo)/2 - 20px;
-		margin-right: 42%;
-
-		&:hover {
-			color: $page-color;
-		}
-
-		&:after {
-			content: '';
-			@include global-sprite(where-arrow);
-			width: global-sprite-width(where-arrow);
-			height: global-sprite-height(where-arrow);
-			display: block;
-			position: absolute;
-			top: -1.1em;
-			right: -(global-sprite-width(where-arrow) + 5px);
-		}
-	}
+	overflow: hidden;
 
 	.call-us.button {
 		float: right;
-		margin: 22px 0;
 		padding: 0.5em 2em;
+	}
+
+	.brand-list {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		margin: 0 $column-gutter/2;
+		opacity: 0.2;
+
+		> li {
+			width: 100px;
+			height: 55px;
+		}
 	}
 }
 
@@ -116,15 +94,20 @@ $global-spacing: 1px;
 	margin: 0;
 
 	.link {
-		@include global-sprite(logo);
-		background-size: global-sprite-width(logo)/2;
-		width: global-sprite-width(logo)/2;
-		height: global-sprite-height(logo)/2;
+		background: url(../images/logo@2x.png);
+		background-size: (440px/2);
+		width: (440px/2);
+		height: (156px/2);
 
 		display: block;
 		overflow: hidden;
 		text-indent: -2000px;
 	}
+}
+
+#page-header-slogan {
+	color: $page-color;
+	margin: 0.3em 0;
 }
 
 .content-box {
@@ -152,7 +135,6 @@ $global-spacing: 1px;
 	list-style: none;
 
 	p {
-		font-weight: 300;
 		font-size: 1.5em;
 		margin: 0 0.5em 0 0;
 	}
@@ -206,7 +188,7 @@ $global-spacing: 1px;
 	}
 
 	.carlist-title {
-		font-weight: 300;
+		font-weight: $body-font-weight;
 	}
 
 	.carlist-image {
@@ -243,7 +225,7 @@ $global-spacing: 1px;
 	}
 
 	.title {
-		font-weight: 300;
+		font-weight: $body-font-weight;
 	}
 
 	.price-container p {
