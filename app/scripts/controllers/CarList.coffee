@@ -8,6 +8,7 @@ angular.module('UnionCarWebsiteApp')
 			brand: 'Ferrari',
 			model: 'Testarossa',
 			km: 110000,
+			type: 'nuovo'
 			date: new Date(2003, 3),
 			price: 230000,
 			images: [
@@ -19,6 +20,7 @@ angular.module('UnionCarWebsiteApp')
 			brand: 'Ferrari',
 			model: 'Testarossa',
 			km: 110000,
+			type: 'usato'
 			date: new Date(2003, 3),
 			price: 20000,
 			images: [
