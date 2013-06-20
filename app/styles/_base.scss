@@ -14,9 +14,9 @@ a {
 	@include transition-duration(0.25s);
 }
 
-$global-spacing: 1px;
-@import "global/*.png";
-@include all-global-sprites;
+$header-brand-spacing: 1px;
+@import "header-brand/*.png";
+@include all-header-brand-sprites;
 
 @import "brand/*.png";
 @include all-brand-sprites;
