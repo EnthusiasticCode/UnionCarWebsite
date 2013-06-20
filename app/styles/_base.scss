@@ -37,6 +37,15 @@ $global-spacing: 1px;
 	}
 }
 
+#site-footer {
+	color: white;
+	text-align: center;
+	padding: $column-gutter 0;
+	font-weight: 300;
+	font-size: 0.7em;
+	opacity: 0.7;
+}
+
 #page {
 	padding: $column-gutter/2;
 	background: $page-color;
