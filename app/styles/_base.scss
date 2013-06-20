@@ -1,5 +1,11 @@
 html, body {
-	background: $primary-color;
+	background-color: $primary-color;
+	background-size: cover;
+	background-attachment: fixed;
+
+	@media #{$small} {
+		background-image: url(../images/bg/bg1.jpg);
+	}
 }
 
 a {
@@ -49,6 +55,10 @@ $global-spacing: 1px;
 #page {
 	padding: $column-gutter/2;
 	background: $page-color;
+
+	@media #{$small} {
+		@include box-shadow(rgba(black, 0.4) 0px 0px 5px);
+	}
 }
 
 #page-header {
