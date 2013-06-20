@@ -2,6 +2,7 @@ html, body {
 	background-color: $primary-color;
 	background-size: cover;
 	background-attachment: fixed;
+	overflow-x: hidden;
 
 	@media #{$small} {
 		background-image: url(../images/bg/bg1.jpg);
@@ -37,6 +38,8 @@ $global-spacing: 1px;
 }
 
 #site {
+	overflow: hidden;
+
 	@media only screen and (min-width: #{$row-width}) {
 		margin-top: $column-gutter;
 		margin-bottom: $column-gutter;
@@ -186,11 +189,12 @@ $global-spacing: 1px;
 
 			&.carlist-brand-col { width: 25%; }
 			&.carlist-image-col { width: 75%; text-align: center; }
+			&.carlist-type-col { text-transform: capitalize; }
 
 			@media only screen and (max-width: #{$small-screen}) {
 				&.carlist-brand-col,
 				&.carlist-date-col,
-				&.carlist-km-col {
+				&.carlist-type-col {
 					display: none;
 				}
 
