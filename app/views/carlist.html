@@ -5,7 +5,7 @@
 </div>
 
 <ul class="carlist content-box">
-	<li ng-repeat="car in filteredCars = (cars|filter:carsFilterPredicate)" id="car-{{car.id}}">
+	<li ng-repeat="car in filteredCars = (cars|filter:carsFilterPredicate)" ng-animate="'animation'" id="car-{{car.id}}">
 		<a href="#/details/{{car.id}}" class="carlist-link">
 			<div class="row">
 				<div class="small-3 columns">

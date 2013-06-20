@@ -141,9 +141,35 @@ $header-brand-spacing: 1px;
 
 	> li {
 		border-bottom: 1px solid $secondary-color;
+		overflow: hidden;
+		max-height: 200px;
 
 		&:last-child {
 			border-bottom: none;
+		}
+
+		&.animation-enter {
+			@include transition-property(all);
+			@include transition-duration(0.5s);
+			opacity: 0;
+			max-height: 0px;
+
+			&.animation-enter-active {
+				opacity: 1;
+				max-height: 200px;
+			}
+		}
+
+		&.animation-leave {
+			@include transition-property(all);
+			@include transition-duration(0.5s);
+			opacity: 1;
+
+
+			&.animation-leave-active {
+				opacity: 0;
+				max-height: 0px;
+			}
 		}
 	}
 
