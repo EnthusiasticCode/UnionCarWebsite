@@ -8,7 +8,7 @@ window.loadContactsMaps = ->
 		})
 
 angular.module('UnionCarWebsiteApp')
-	.controller 'ContactsCtrl', ($scope, $timeout) ->
+	.controller 'ContactsCtrl', ($scope, $http) ->
 		# Loading Google Maps API if needed
 		# unless google?.maps?
 		# 	script = document.createElement("script")
@@ -19,12 +19,10 @@ angular.module('UnionCarWebsiteApp')
 		# 	loadContactsMaps()
 
 		$scope.mail =
-			sender: null
-			text: null
+			status: "form"
+			data:
+				sender: null
+				text: null
 			send: ->
 				$scope.mail.status = "sending"
-				# TODO substitute with API ajax call
-				$timeout (->
-					console.log $scope.mail.sender, $scope.mail.text
-					$scope.mail.status = "sent"), 2000
-			status: "form"
+				$http.post('/cgi-bin/api/mail', $scope.mail.data).success(-> $scope.mail.status = "sent")

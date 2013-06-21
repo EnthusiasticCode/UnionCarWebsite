@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/cgi"
+	"net/smtp"
 	"os"
 	"path"
 	"path/filepath"
@@ -31,10 +32,12 @@ const (
 
 // Config object
 type Config struct {
-	ZipPath                       string
-	CsvComma                      string
-	ImagesPath, ImagesExtension   string
-	DatabaseConnection, TableName string
+	ZipPath                          string
+	CsvComma                         string
+	ImagesPath, ImagesExtension      string
+	DatabaseConnection, TableName    string
+	SMTPHost, SMTPUser, SMTPPassword string
+	MailRecipient                    string
 }
 
 var (
@@ -45,6 +48,10 @@ var (
 		ImagesExtension:    ".jpg",
 		DatabaseConnection: "root:root@/unioncars",
 		TableName:          "cars",
+		SMTPHost:           "mail.example.com",
+		SMTPUser:           "user",
+		SMTPPassword:       "pass",
+		MailRecipient:      "info@example.com",
 	}
 	logger *log.Logger
 )
@@ -144,13 +151,46 @@ func main() {
 	err = cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
+		p := path.Clean(r.URL.Path)
+
+		// POST api/mail
+		if m, err := path.Match("mail", p); m && err == nil {
+			err = r.ParseForm()
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				logger.Fatalln(err)
+			}
+			// see https://code.google.com/p/go-wiki/wiki/SendingMail
+			// Set up authentication information.
+			auth := smtp.PlainAuth(
+				"",
+				config.SMTPUser,
+				config.SMTPPassword,
+				config.SMTPHost,
+			)
+			// Connect to the server, authenticate, set the sender and recipient,
+			// and send the email all in one step.
+			err := smtp.SendMail(
+				config.SMTPHost+":25",
+				auth,
+				r.PostForm.Get("sender"),
+				[]string{config.MailRecipient},
+				[]byte(r.PostForm.Get("text")),
+			)
+			if err != nil {
+				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+				logger.Fatal(err)
+			}
+			io.WriteString(w, "{\"status\": \"ok\", \"sender\": \""+r.PostForm.Get("sender")+"\"}")
+			return
+		}
+
 		// Update database if needed
 		go updateIfNeeded()
 
-		p := path.Clean(r.URL.Path)
 		encoder := json.NewEncoder(w)
 
-		// api/car
+		// GET api/car
 		if m, err := path.Match("car", p); m && err == nil {
 			c := make(Cars, 0, 10)
 			if err := c.loadAll(); err != nil {
@@ -164,7 +204,7 @@ func main() {
 			return
 		}
 
-		// api/car/<id>
+		// GET api/car/<id>
 		if m, err := path.Match("car/*", p); m && err == nil {
 			id, err := strconv.Atoi(path.Base(p))
 			if err != nil {

@@ -21,9 +21,9 @@
 			<h4>Scrivici</h4>
 			<div ng-switch="mail.status">
 				<form name="contactForm" class="custom" novalidate ng-submit="mail.send()" ng-switch-default>
-					<input type="email" placeholder="La tua email" name="email" ng-model="mail.sender" required ng-class="{'error': !contactForm.email.$error.required&&!contactForm.email.$valid}">
+					<input type="email" placeholder="La tua email" name="email" ng-model="mail.data.sender" required ng-class="{'error': !contactForm.email.$error.required&&!contactForm.email.$valid}">
 					<small class="error" ng-show="!contactForm.email.$error.required&&!contactForm.email.$valid">E-Mail non valida</small>
-					<textarea name="text" class="contact-text" placeholder="Messaggio" ng-model="mail.text" required></textarea>
+					<textarea name="text" class="contact-text" placeholder="Messaggio" ng-model="mail.data.text" required></textarea>
 					<input type="submit" value="Invia" class="contact-submit small radius button" ng-class="{'disabled': !contactForm.$valid}">
 				</form>
 				<div class="loading" ng-switch-when="sending"></div>

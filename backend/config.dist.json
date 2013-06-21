@@ -4,5 +4,9 @@
 	"ImagesPath": "test/images/",
 	"ImagesExtension": ".jpg",
 	"DatabaseConnection": "root:root@/unioncars",
-	"TableName": "cars"
+	"TableName": "cars",
+	"SMTPHost": "mail.example.it",
+	"SMTPUser": "user",
+	"SMTPPassword": "pass",
+	"MailRecipient": "info@example.it"
 }
