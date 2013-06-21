@@ -14,6 +14,13 @@ a {
 	@include transition-duration(0.25s);
 }
 
+.loading {
+	background: url(../images/loading.gif) no-repeat top center;
+	background-size: 36px;
+	min-height: 37px;
+	min-width: 38px;
+}
+
 $header-brand-spacing: 1px;
 @import "header-brand/*.png";
 @include all-header-brand-sprites;
