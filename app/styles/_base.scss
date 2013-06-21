@@ -305,3 +305,37 @@ $header-brand-spacing: 1px;
 .flex-control-thumbs li {
 	padding-right: 5px;
 }
+
+#contacts {
+	position: relative;
+
+	.vcard {
+		width: 100%;
+	}
+
+	.contact-text {
+		min-height: 8em;
+		max-width: 100%;
+	}
+
+	.contact-submit {
+		float: right;
+		margin: 0;
+	}
+}
+
+#map-canvas {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 50%;
+	height: 100%;
+	min-height: 200px;
+
+	@media only screen and (max-width: #{$small-screen}) {
+		@include grid-row(nest);
+		position: relative;
+		margin-top: ($column-gutter/2);
+		margin-bottom: (-$column-gutter/2);
+	}
+}

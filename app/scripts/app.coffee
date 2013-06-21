@@ -7,5 +7,8 @@ app.config ['$routeProvider', ($routeProvider) ->
 	.when '/details/:id',
 		templateUrl: 'views/details.html',
 		controller: 'DetailsCtrl'
+	.when '/contacts',
+		templateUrl: 'views/contacts.html',
+		controller: 'ContactsCtrl'
 	.otherwise
 		redirectTo: '/']
