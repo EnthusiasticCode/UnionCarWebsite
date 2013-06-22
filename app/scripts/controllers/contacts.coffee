@@ -16,7 +16,7 @@ window.loadContactsMaps = ->
 				position: results[0].geometry.location
 
 angular.module('UnionCarWebsiteApp')
-	.controller 'ContactsCtrl', ($scope, $http) ->
+	.controller 'ContactsCtrl', ($scope) ->
 		# Loading Google Maps API if needed
 		unless google?.maps?
 			script = document.createElement("script")
@@ -33,4 +33,9 @@ angular.module('UnionCarWebsiteApp')
 				text: null
 			send: ->
 				$scope.mail.status = "sending"
-				$http.post('/cgi-bin/api/mail', $scope.mail.data).success(-> $scope.mail.status = "sent")
+				$.ajax
+					type: 'POST'
+					data: $scope.mail.data
+					url: 'http://www.unioncar.it/cgi-bin/api/mail'
+					success: -> $scope.$apply ->
+						$scope.mail.status = "sent"
