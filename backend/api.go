@@ -7,7 +7,6 @@ import (
 	"archive/zip"
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -35,9 +34,15 @@ type Config struct {
 	ZipPath                          string
 	CsvComma                         string
 	ImagesPath, ImagesExtension      string
-	DatabaseConnection, TableName    string
 	SMTPHost, SMTPUser, SMTPPassword string
 	MailRecipient                    string
+	DatabaseConnection, TableName    string
+	TableMapping                     []ConfigColumnAlias
+}
+
+type ConfigColumnAlias struct {
+	TableColumn string
+	Alias       string
 }
 
 var (
@@ -52,9 +57,13 @@ var (
 		SMTPUser:           "user",
 		SMTPPassword:       "pass",
 		MailRecipient:      "info@example.com",
+		TableMapping:       nil,
 	}
 	logger *log.Logger
 )
+
+// CSV eleemnts
+type csvElement map[string]string
 
 // os.FileInfo sorter by ModTime
 type byModTime []os.FileInfo
@@ -342,23 +351,63 @@ func updateDatabase() error {
 			c := csv.NewReader(ff)
 			c.Comma = rune(config.CsvComma[0])
 			c.FieldsPerRecord = -1
-			c.TrimLeadingSpace = true
+			c.TrimLeadingSpace = false
 			rs, err := c.ReadAll()
 			if err != nil {
 				return err
 			}
 
-			// Convert csv to sql
+			// Convert csv to slice of csvElement
+			elements := make([]csvElement, 0, 50)
+			var columns []string
 			for i, r := range rs {
 				if i == 0 {
 					// Columns
-					fmt.Println(r) // []string
+					columns = r
 				} else {
 					// Content
-					fmt.Println(r)
+					element := make(csvElement)
+					for c, cv := range r {
+						element[columns[c]] = cv
+					}
+					elements = append(elements, element)
 				}
 			}
 			ff.Close()
+
+			// Build insert prepared query
+			columnsCount := len(config.TableMapping)
+			insertQueryString := "INSERT INTO " + config.TableName + " ("
+			for i, column := range config.TableMapping {
+				insertQueryString += column.TableColumn
+				if i+1 < columnsCount {
+					insertQueryString += ","
+				}
+			}
+			insertQueryString += ") VALUES ("
+			for i := 0; i < columnsCount; i++ {
+				insertQueryString += "?"
+				if i+1 < columnsCount {
+					insertQueryString += ","
+				}
+			}
+			insertQueryString += ")"
+			insertQuery, err := db.Prepare(insertQueryString)
+			if err != nil {
+				return err
+			}
+			// Put csvElements in database
+			for _, element := range elements {
+				values := make([]interface{}, 0, columnsCount)
+				for _, column := range config.TableMapping {
+					values = append(values, element[column.Alias])
+				}
+				_, err = insertQuery.Exec(values...)
+				if err != nil {
+					return err
+				}
+			}
+			insertQuery.Close()
 		} else if strings.HasSuffix(strings.ToLower(f.Name), config.ImagesExtension) {
 
 			// Create direcotry

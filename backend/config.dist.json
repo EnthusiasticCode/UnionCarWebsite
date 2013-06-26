@@ -3,10 +3,23 @@
 	"CsvComma": ";",
 	"ImagesPath": "test/images/",
 	"ImagesExtension": ".jpg",
-	"DatabaseConnection": "root:root@/unioncars",
-	"TableName": "cars",
 	"SMTPHost": "mail.example.it",
 	"SMTPUser": "user",
 	"SMTPPassword": "pass",
-	"MailRecipient": "info@example.it"
+	"MailRecipient": "info@example.it",
+	"DatabaseConnection": "root:root@/unioncars",
+	"TableName": "cars",
+	"TableMapping": [
+		{"TableColumn": "brand", "Alias": "DESC. MARCA"},
+		{"TableColumn": "model_description", "Alias": "DESC. AUTOVETTURA"},
+		{"TableColumn": "color", "Alias": "COLORE"},
+		{"TableColumn": "model", "Alias": "DESC. MODELLO"},
+		{"TableColumn": "equipment", "Alias": "EQUIPAGGIAMENTI SIGNIF. (10) SIGLA"},
+		{"TableColumn": "image_url_1", "Alias": "FOTO1 AUTO USATA"},
+		{"TableColumn": "image_url_2", "Alias": "FOTO2 AUTO USATA"},
+		{"TableColumn": "image_url_3", "Alias": "FOTO3 AUTO USATA"},
+		{"TableColumn": "image_url_4", "Alias": "FOTO4 VEICOLO"},
+		{"TableColumn": "note", "Alias": "NOTE X INTERNET"},
+		{"TableColumn": "price", "Alias": "PrezzoV. Euro"}
+	]
 }
