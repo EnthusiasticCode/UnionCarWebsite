@@ -20,6 +20,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bjarneh/latinx"
+
 	"database/sql"
 	_ "github.com/EnthusiasticCode/mysql"
 )
@@ -347,8 +349,11 @@ func updateDatabase() error {
 				return err
 			}
 
+			// Reader from ISO-8859-1
+			ffutf8 := latinx.NewReader(latinx.ISO_8859_1, ff)
+
 			// Open CSV reader
-			c := csv.NewReader(ff)
+			c := csv.NewReader(ffutf8)
 			c.Comma = rune(config.CsvComma[0])
 			c.FieldsPerRecord = -1
 			c.TrimLeadingSpace = false
