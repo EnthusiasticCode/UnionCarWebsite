@@ -277,17 +277,22 @@ func updateDatabase() error {
 
 	// Early return if no file present
 	if len(infos) == 0 {
-		return err
+		return nil
 	}
 
 	// Select most recent valid archive infos
-	// TODO may be better to use file name instead
 	sort.Sort(sort.Reverse(byModTime(infos)))
-	var info os.FileInfo
-	for _, info = range infos {
-		if strings.HasSuffix(info.Name(), ".zip") && !strings.HasPrefix(info.Name(), ".") {
+	var info os.FileInfo = nil
+	for _, i := range infos {
+		if strings.HasSuffix(i.Name(), ".zip") && !strings.HasPrefix(i.Name(), ".") {
+			info = i
 			break
 		}
+	}
+
+	// Early exit if no zip file found
+	if info == nil {
+		return nil
 	}
 
 	// Unzip archive
@@ -296,7 +301,15 @@ func updateDatabase() error {
 		return err
 	}
 	defer archive.Close()
-	defer os.Remove(config.ZipPath + info.Name())
+	defer func() {
+		if err != nil {
+			return // do not delete anything if import failed
+		}
+		// Delete all files listed earlier
+		for _, info = range infos {
+			os.Remove(config.ZipPath + info.Name())
+		}
+	}()
 
 	// Open database
 	db, err := sql.Open("mysql", config.DatabaseConnection)
@@ -346,7 +359,7 @@ func updateDatabase() error {
 				}
 			}
 			ff.Close()
-		} else if strings.HasSuffix(f.Name, config.ImagesExtension) {
+		} else if strings.HasSuffix(strings.ToLower(f.Name), config.ImagesExtension) {
 
 			// Create direcotry
 			dir := filepath.Dir(f.Name)
