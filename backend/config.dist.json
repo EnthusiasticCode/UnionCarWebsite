@@ -7,7 +7,7 @@
 	"SMTPUser": "user",
 	"SMTPPassword": "pass",
 	"MailRecipient": "info@example.it",
-	"DatabaseConnection": "root:root@/unioncars?charset=utf8",
+	"DatabaseConnection": "root:root@/unioncars?charset=utf8&loc=Local&parseTime=true",
 	"TableName": "cars",
 	"TableMapping": [
 		{"TableColumn": "brand", "Alias": "DESC. MARCA"},
