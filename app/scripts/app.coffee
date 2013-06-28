@@ -1,4 +1,4 @@
-app = angular.module('UnionCarWebsiteApp', [])
+app = angular.module('UnionCarWebsiteApp', ['ngResource'])
 
 app.config ['$routeProvider', ($routeProvider) ->
 	$routeProvider.when '/',
