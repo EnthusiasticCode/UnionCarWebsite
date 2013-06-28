@@ -224,6 +224,10 @@ $header-brand-spacing: 1px;
 		font-weight: $body-font-weight;
 	}
 
+	.carlist-brand {
+		text-transform: capitalize;
+	}
+
 	.carlist-image {
 		display: inline-block;
 		max-height: 105px;
@@ -259,6 +263,10 @@ $header-brand-spacing: 1px;
 
 	.title {
 		font-weight: $body-font-weight;
+	}
+
+	.title.brand {
+		text-transform: capitalize;
 	}
 
 	.price-container p {
