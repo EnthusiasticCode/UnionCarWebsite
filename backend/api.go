@@ -64,8 +64,9 @@ var (
 	logger *log.Logger
 )
 
-// CSV eleemnts
+// CSV and Database elements
 type csvElement map[string]string
+type dbElement map[string]interface{}
 
 // os.FileInfo sorter by ModTime
 type byModTime []os.FileInfo
@@ -80,69 +81,6 @@ func (i byModTime) Swap(a, b int) {
 
 func (i byModTime) Less(a, b int) bool {
 	return i[a].ModTime().Before(i[b].ModTime())
-}
-
-// Car row in database
-type Car struct {
-	Id    int
-	Brand string
-}
-
-func (car Car) get(id int) error {
-	db, err := sql.Open("mysql", config.DatabaseConnection)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	rows, err := db.Query("SELECT * FROM ? WHERE id=?", config.TableName, id)
-	if err != nil {
-		return err
-	}
-
-	if rows.Next() {
-		err = rows.Scan(
-			&car.Id,
-			&car.Brand,
-		)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Cars collection in database
-type Cars []Car
-
-func (c *Cars) loadAll() error {
-	db, err := sql.Open("mysql", config.DatabaseConnection)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	rows, err := db.Query("SELECT * FROM ?", config.TableName)
-	if err != nil {
-		return err
-	}
-
-	cars := make(Cars, 0, 10)
-	for rows.Next() {
-		car := Car{}
-		err = rows.Scan(
-			&car.Id,
-			&car.Brand,
-		)
-		if err != nil {
-			return err
-		}
-		cars = append(cars, car)
-	}
-
-	c = &cars
-	return nil
 }
 
 func main() {
@@ -204,14 +142,13 @@ func main() {
 
 		// GET api/car
 		if m, err := path.Match("car", p); m && err == nil {
-			c := make(Cars, 0, 10)
-			if err := c.loadAll(); err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatalln(err)
+			cars, err := getCars()
+			if err != nil {
+				outputError(w, err)
 			}
-			if err = encoder.Encode(c); err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatalln(err)
+
+			if err = encoder.Encode(cars); err != nil {
+				outputError(w, err)
 			}
 			return
 		}
@@ -220,19 +157,17 @@ func main() {
 		if m, err := path.Match("car/*", p); m && err == nil {
 			id, err := strconv.Atoi(path.Base(p))
 			if err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatalln(err)
+				outputError(w, err)
 			}
-			var c Car
-			err = c.get(id)
+
+			car, err := getCar(id)
 			if err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatalln(err)
+				outputError(w, err)
 			}
-			err = encoder.Encode(c)
+
+			err = encoder.Encode(car)
 			if err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatalln(err)
+				outputError(w, err)
 			}
 			return
 		}
@@ -258,6 +193,99 @@ func loadConfig(c *Config, path string) error {
 	return nil
 }
 
+// Load
+func mapQueryResults(rows *sql.Rows) ([]dbElement, error) {
+	// Get column names
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	// Make a slice for the values
+	values := make([]sql.RawBytes, len(columns))
+
+	// rows.Scan wants '[]interface{}' as an argument, so we must copy the
+	// references into such a slice
+	// See http://code.google.com/p/go-wiki/wiki/InterfaceSlice for details
+	scanArgs := make([]interface{}, len(values))
+	for i := range values {
+		scanArgs[i] = &values[i]
+	}
+
+	// Create result array
+	result := make([]dbElement, 0)
+
+	for rows.Next() {
+		// get RawBytes from data
+		err = rows.Scan(scanArgs...)
+		if err != nil {
+			return nil, err
+		}
+
+		// Now do something with the data.
+		// Here we just print each column as a string.
+		res := make(dbElement)
+		for i, col := range values {
+			if col == nil {
+				res[columns[i]] = nil
+			} else {
+				// TODO parse time.Time
+				res[columns[i]] = string(col)
+			}
+		}
+
+		// Add to result
+		result = append(result, res)
+	}
+
+	return result, nil
+}
+
+func getCars() ([]dbElement, error) {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM " + config.TableName)
+	if err != nil {
+		return nil, err
+	}
+
+	mapRows, err := mapQueryResults(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapRows, nil
+}
+
+func getCar(id int) (dbElement, error) {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM "+config.TableName+" WHERE id=?", id)
+	if err != nil {
+		return nil, err
+	}
+
+	mapRows, err := mapQueryResults(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(mapRows) == 0 {
+		return nil, nil
+	}
+
+	return mapRows[0], nil
+}
+
+// Lock the archives folder and updates the database
 func updateIfNeeded() {
 	// Managin lock via file
 	lockFile, err := os.OpenFile(lockFileName, os.O_CREATE|os.O_EXCL, 0660)
@@ -443,4 +471,10 @@ func updateDatabase() error {
 	}
 
 	return nil
+}
+
+func outputError(w http.ResponseWriter, err error) {
+	w.Header().Set("Status", "500 Internal Server Error")
+	io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
+	logger.Fatalln(err)
 }
