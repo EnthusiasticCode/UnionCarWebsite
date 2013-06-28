@@ -136,7 +136,7 @@ func main() {
 		}
 
 		// Update database if needed
-		go updateIfNeeded()
+		updateIfNeeded()
 
 		encoder := json.NewEncoder(w)
 
