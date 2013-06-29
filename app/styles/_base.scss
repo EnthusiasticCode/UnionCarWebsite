@@ -310,17 +310,6 @@ $header-brand-spacing: 1px;
 	}
 }
 
-.flexslider {
-	@include box-shadow(none);
-	border: none;
-	background: none;
-	margin: 0 0 $column-gutter;
-}
-
-.flex-control-thumbs li {
-	padding-right: 5px;
-}
-
 #contacts {
 	position: relative;
 
