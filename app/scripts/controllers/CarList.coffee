@@ -1,7 +1,7 @@
 'use strict'
 
 angular.module('UnionCarWebsiteApp')
-.controller 'CarListCtrl', ['$scope', 'carApi', ($scope, carApi) ->
+.controller 'CarListCtrl', ($scope, carApi) ->
 	$scope.cars = []
 	carApi.all (cars) ->
 		$scope.cars = cars
@@ -123,7 +123,6 @@ angular.module('UnionCarWebsiteApp')
 		# formatSelection: (item) ->
 		# 	item.text
 		).on('change', (e) -> $scope.$apply(-> $scope.filter.predicates = e.val))
-	]
 
 # Italian translation for select2
 $.extend $.fn.select2.defaults,
