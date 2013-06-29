@@ -56,19 +56,11 @@
 			</div>
 
 			<div class="small-12 large-6 columns">
-				<div class="slideshow flexslider">
-					<ul class="slides">
-						<li data-thumb="http://placehold.it/100&amp;text=PlaceOne">
-							<img src="http://placehold.it/300&amp;text=One" />
-						</li>
-						<li data-thumb="http://placehold.it/100&amp;text=PlaceTwo">
-							<img src="http://placehold.it/300&amp;text=Two" />
-						</li>
-						<li data-thumb="http://placehold.it/100&amp;text=PlaceThree">
-							<img src="http://placehold.it/300&amp;text=Three" />
-						</li>
-					</ul>
-				</div>
+				<flex-slider slide="i in car.images" animation="slide" control-nav="thumbnails">
+					<li data-thumb="/images/cars/{{i}}">
+						<img ng-src="/images/cars/{{i}}" />
+					</li>
+				</flex-slider>
 
 				<a href="" class="radius button contact-button">Contattaci per informazioni su <span class="brand" ng-bind="car.brand">&ndash;</span> <strong class="model" ng-bind="car.model">&ndash;</strong></a>
 			</div>
