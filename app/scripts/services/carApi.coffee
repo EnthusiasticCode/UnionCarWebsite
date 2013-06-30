@@ -32,12 +32,8 @@ carFactory.$inject = ['$resource']
 parseCar = (car) ->
 	car.brand = car.brand.toLowerCase()
 
-	car.images = [
-		car.image_url_1 or 'nopicture.jpg',
-		car.image_url_2,
-		car.image_url_3,
-		car.image_url_4
-	]
+	car.images = []
+	car.images.push c for i in [1..4] when c = car["image_url_#{i}"]
 	delete car.image_url_1
 	delete car.image_url_2
 	delete car.image_url_3

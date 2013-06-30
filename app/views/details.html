@@ -56,7 +56,7 @@
 			</div>
 
 			<div class="small-12 large-6 columns">
-				<flex-slider slide="i in car.images" animation="slide" control-nav="thumbnails">
+				<flex-slider slide="i in car.images" animation="slide" control-nav="thumbnails" ng-if="car.images.length">
 					<li data-thumb="/images/cars/{{i}}">
 						<img ng-src="/images/cars/{{i}}" />
 					</li>
