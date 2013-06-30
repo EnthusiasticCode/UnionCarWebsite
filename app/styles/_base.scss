@@ -78,11 +78,6 @@ $header-brand-spacing: 1px;
 	margin: 0 0 $column-gutter/2;
 	overflow: hidden;
 
-	.call-us.button {
-		float: right;
-		padding: 0.5em 2em;
-	}
-
 	.brand-list {
 		position: absolute;
 		bottom: 0;
@@ -115,6 +110,23 @@ $header-brand-spacing: 1px;
 #page-header-slogan {
 	color: $page-color;
 	margin: 0.3em 0;
+	text-align: center;
+
+	@media #{$small} {
+		float: left;
+		text-align: left;
+	}
+}
+
+#page-header-call-us {
+	width: 100%;
+	padding: 0.5em 2em;
+	margin: 0;
+
+	@media #{$small} {
+		width: auto;
+		float: right;
+	}
 }
 
 .content-box {
@@ -241,6 +253,7 @@ $header-brand-spacing: 1px;
 
 .car-details {
 	.car-details-header {
+		display: inline-block;
 		margin-bottom: 1em;
 
 		.back.button,
