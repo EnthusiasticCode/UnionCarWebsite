@@ -1,0 +1,7 @@
+{
+  "name": "UnionCarWebsite",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular-flexslider": "latest"
+  }
+}

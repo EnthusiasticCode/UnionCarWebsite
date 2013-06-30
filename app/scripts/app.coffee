@@ -1,4 +1,4 @@
-app = angular.module('UnionCarWebsiteApp', ['ngResource'])
+app = angular.module('UnionCarWebsiteApp', ['ngResource', 'angular-flexslider'])
 
 app.config ['$routeProvider', ($routeProvider) ->
 	$routeProvider.when '/',
