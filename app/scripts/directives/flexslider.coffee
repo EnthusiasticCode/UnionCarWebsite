@@ -8,7 +8,7 @@ angular.module('UnionCarWebsiteApp')
 		transclude: yes
 		template: '<div class="flexslider-container"></div>'
 		compile: (element, attr, linker) -> ($scope, $element, $attr) ->
-			match = $attr.slide.match /^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/
+			match = $attr.slide.match /^\s*(.+)\s+in\s+(.*?)\s*$/
 			indexString = match[1]
 			collectionString = match[2]
 			elementsScopes = []
