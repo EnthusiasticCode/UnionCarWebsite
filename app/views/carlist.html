@@ -43,8 +43,9 @@
 			</div>
 		</a>
 	</li>
-	<li ng-if="!filteredCars.length" class="carlist-nothing-found">
+	<li ng-if="!filteredCars.length && filter.predicates.length" class="carlist-nothing-found">
 		Nessuna auto trovata con i parametri indicati!
 	</li>
+	<li ng-if="!filteredCars.length && !filter.predicates.length" class="loading"></li>
 </ul>
 
