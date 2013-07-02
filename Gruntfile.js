@@ -3,6 +3,8 @@ var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 var mountFolder = function (connect, dir) {
   return connect.static(require('path').resolve(dir));
 };
+// See: http://ericduran.io/2013/05/31/angular-html5Mode-with-yeoman/
+var modRewrite = require('connect-modrewrite');
 
 module.exports = function (grunt) {
   // load all grunt tasks
@@ -49,6 +51,9 @@ module.exports = function (grunt) {
         options: {
           middleware: function (connect) {
             return [
+              modRewrite([
+                '!\\.html|\\.js|\\.css|\\.png|\\.jpg|\\.gif$ /index.html [L]'
+              ]),
               lrSnippet,
               mountFolder(connect, '.tmp'),
               mountFolder(connect, yeomanConfig.app)
