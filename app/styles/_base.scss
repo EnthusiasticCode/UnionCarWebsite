@@ -27,6 +27,8 @@ $header-brand-spacing: 1px;
 
 @include retina-sprite(brand);
 .brand-image {
+	width: 50px;
+	height: 50px;
 	margin: 0 auto;
 }
 
