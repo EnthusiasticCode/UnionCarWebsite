@@ -3,5 +3,28 @@
 @import "foundation/scss/foundation";
 @import "compass";
 
+@mixin retina-sprite($folder) {
+  $sprites: sprite-map("#{$folder}/*.png");
+  $sprites-2x: sprite-map("#{$folder}@2x/*.png");
+
+  @each $sprite in sprite-names($sprites) {
+    .#{$folder}-#{$sprite} {
+    	background-image: sprite-url($sprites);
+      background-position: sprite-position($sprites, $sprite);
+      height: image-height(sprite-file($sprites, $sprite));
+      width: image-width(sprite-file($sprites, $sprite));
+    }
+  }
+  @media (min-resolution: 2dppx), (min-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2/1), (-webkit-min-device-pixel-ratio: 2) {
+    @each $sprite in sprite-names($sprites-2x) {
+      .#{$folder}-#{$sprite} {
+      	background-image: sprite-url($sprites-2x);
+      	background-position: nth(sprite-position($sprites-2x, $sprite), 1) nth(sprite-position($sprites-2x, $sprite), 2) / 2;
+      	@include background-size(100% auto);
+      }
+    }
+  }
+}
+
 @import "base";
 @import "flexslider";

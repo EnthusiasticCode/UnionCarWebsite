@@ -25,12 +25,8 @@ $header-brand-spacing: 1px;
 @import "header-brand/*.png";
 @include all-header-brand-sprites;
 
-@import "brand/*.png";
-@include all-brand-sprites;
+@include retina-sprite(brand);
 .brand-image {
-	width: 30px;
-	height: 50px;
-	background-size: 30px;
 	margin: 0 auto;
 }
 
