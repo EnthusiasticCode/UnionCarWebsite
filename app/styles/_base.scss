@@ -39,16 +39,6 @@ $header-brand-spacing: 1px;
 	margin: 0 auto;
 }
 
-.view-animation-enter {
-	@include transition-property(all);
-	@include transition-duration(1s);
-	opacity: 0;
-
-	&.view-animation-enter-active {
-		opacity: 1;
-	}
-}
-
 #site {
 	overflow: hidden;
 
@@ -58,22 +48,9 @@ $header-brand-spacing: 1px;
 	}
 }
 
-#site-footer {
-	color: white;
-	text-align: center;
-	padding: $column-gutter 0;
-	font-size: 0.7em;
-	opacity: 0.7;
-}
-
-#page {
-	padding: $column-gutter/2;
-	background: $page-color;
-
-	@media #{$small} {
-		@include box-shadow(rgba(black, 0.4) 0px 0px 5px);
-	}
-}
+////////////////////////////////////////////////////////////////////////////////
+// Header
+////////////////////////////////////////////////////////////////////////////////
 
 #page-header {
 	position: relative;
@@ -134,230 +111,43 @@ $header-brand-spacing: 1px;
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Content
+////////////////////////////////////////////////////////////////////////////////
+
+#page {
+	padding: $column-gutter/2;
+	background: $page-color;
+
+	@media #{$small} {
+		@include box-shadow(rgba(black, 0.4) 0px 0px 5px);
+	}
+}
+
 .content-box {
 	border: 1px solid $secondary-color;
 	padding: $column-gutter/2;
 	background-color: white;
 }
 
-#carlist-filter, #s2id_carlist-filter {
-	margin-bottom: $column-gutter/2;
-}
+.view-animation-enter {
+	@include transition-property(all);
+	@include transition-duration(1s);
+	opacity: 0;
 
-.select2-search-choice-close {
-	top: 5px;
-}
-
-.select2-container-multi .select2-choices .select2-search-choice{
-	padding: 4px 5px 4px 18px;
-	margin: 8px 0 3px 5px;
-}
-
-.carlist {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-
-	p {
-		font-size: 1.5em;
-		margin: 0 0.5em 0 0;
-	}
-
-	> li {
-		border-bottom: 1px solid $secondary-color;
-		overflow: hidden;
-		max-height: 200px;
-
-		&:last-child {
-			border-bottom: none;
-		}
-
-		&.animation-enter {
-			@include transition-property(all);
-			@include transition-duration(0.5s);
-			opacity: 0;
-			max-height: 0px;
-
-			&.animation-enter-active {
-				opacity: 1;
-				max-height: 200px;
-			}
-		}
-
-		&.animation-leave {
-			@include transition-property(all);
-			@include transition-duration(0.5s);
-			opacity: 1;
-
-
-			&.animation-leave-active {
-				opacity: 0;
-				max-height: 0px;
-			}
-		}
-	}
-
-	.carlist-link {
-		@include transition-property(background-color);
-		@include transition-duration(0.25s);
-		padding: $column-gutter/2;
-		display: block;
-
-		&:hover {
-			background-color: $secondary-color;
-		}
-	}
-
-	.inline-list {
-		margin: 0;
-		display: table;
-		width: 100%;
-
-		> li {
-			display: table-cell;
-			float: none;
-			vertical-align: middle;
-			width: 33.333%;
-
-			&.carlist-brand-col { width: 25%; }
-			&.carlist-image-col { width: 75%; text-align: center; }
-			&.carlist-type-col { text-transform: capitalize; }
-
-			@media only screen and (max-width: #{$small-screen}) {
-				&.carlist-brand-col,
-				&.carlist-date-col,
-				&.carlist-type-col {
-					display: none;
-				}
-
-				&.carlist-price-col {
-					text-align: right;
-				}
-			}
-		}
-	}
-
-	.carlist-title {
-		font-weight: $body-font-weight;
-	}
-
-	.carlist-brand {
-		text-transform: capitalize;
-	}
-
-	.carlist-image {
-		display: inline-block;
-		max-height: 105px;
-	}
-
-	.carlist-nothing-found {
-		text-align: center;
-		padding: $column-gutter/2;
+	&.view-animation-enter-active {
+		opacity: 1;
 	}
 }
 
-.car-details {
-	.car-details-header {
-		display: inline-block;
-		margin-bottom: 1em;
+////////////////////////////////////////////////////////////////////////////////
+// Footer
+////////////////////////////////////////////////////////////////////////////////
 
-		.back.button,
-		.title {
-			margin: 0;
-			display: inline-block;
-			vertical-align: middle;
-		}
-
-		.back.button {
-			margin-right: 1em;
-
-			&:before {
-				@include css-triangle(0.5em, $body-font-color, right);
-				display: inline-block;
-				margin-left: -0.7em;
-			}
-		}
-	}
-
-	.title {
-		font-weight: $body-font-weight;
-	}
-
-	.title .brand {
-		text-transform: capitalize;
-	}
-
-	.price-container p {
-		text-align: right;
-		font-weight: bold;
-
-		.price {
-			font-size: 1.5em;
-		}
-	}
-
-	.details-list {
-		list-style: none;
-
-		> li {
-			@include grid-row();
-			margin-bottom: 0.5em;
-
-			> .detail-label {
-				@include grid-column(4);
-				margin-top: 0.15em;
-				text-align: right;
-				white-space: normal;
-				-moz-hyphens:auto;
-				-ms-hyphens:auto;
-				-webkit-hyphens:auto;
-				hyphens:auto;
-				word-wrap:break-word;
-				padding-left: 0.5em;
-				padding-right: 0.5em;
-			}
-
-			> .detail-value {
-				@include grid-column(8);
-			}
-		}
-	}
-
-	.contact-button {
-		width: 100%;
-	}
-}
-
-#contacts {
-	position: relative;
-
-	.vcard {
-		width: 100%;
-	}
-
-	.contact-text {
-		min-height: 8em;
-		max-width: 100%;
-	}
-
-	.contact-submit {
-		float: right;
-		margin: 0;
-	}
-}
-
-#map-canvas {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 50%;
-	height: 100%;
-	min-height: 300px;
-
-	@media only screen and (max-width: #{$small-screen}) {
-		@include grid-row(nest);
-		position: relative;
-		margin-top: ($column-gutter/2);
-		margin-bottom: (-$column-gutter/2);
-	}
+#site-footer {
+	color: white;
+	text-align: center;
+	padding: $column-gutter 0;
+	font-size: 0.7em;
+	opacity: 0.7;
 }
