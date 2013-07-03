@@ -1,7 +1,5 @@
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if lt IE 9]>      <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
   <head>
     <meta charset="utf-8">
@@ -17,15 +15,15 @@
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="/styles/main.css">
     <!-- endbuild -->
+    <!--[if lt IE 9]>
+    <style type="text/css" src="/styles/ie.css"></style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.2.4/json3.min.js"></script>
+    <![endif]-->
   </head>
   <body ng-app="UnionCarWebsiteApp">
-    <!--[if lt IE 7]>
-      <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
-    <![endif]-->
-
     <!--[if lt IE 9]>
-      <script src="components/es5-shim/es5-shim.js"></script>
-      <script src="components/json3/lib/json3.min.js"></script>
+      <p class="chromeframe">Stai usando un browser obsoleto. <a target="_blank" href="http://browsehappy.com/">Aggiorna il tuo browser oggi</a> o <a target="_blank" href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> per un'esperienza migliore.</p>
     <![endif]-->
 
     <div id="site" class="row">
