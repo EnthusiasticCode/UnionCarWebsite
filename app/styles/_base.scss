@@ -100,14 +100,29 @@ $header-brand-spacing: 1px;
 	}
 }
 
-#page-header-call-us {
-	width: 100%;
-	padding: 0.5em 2em;
-	margin: 0;
+#page-header-contacts {
+	text-align: center;
 
 	@media #{$small} {
-		width: auto;
-		float: right;
+		text-align: right;
+	}
+
+	.button {
+		width: 100%;
+		padding: 0.5em 2em;
+		margin: 0;
+
+		@media #{$small} {
+			width: auto;
+		}
+	}
+
+	.vcard {
+		border: none;
+		color: $page-color;
+		font-size: 0.68em;
+		margin: 1em 0 0 0;
+		padding: 0;
 	}
 }
 
