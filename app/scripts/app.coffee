@@ -10,8 +10,10 @@ app.config ($routeProvider, $locationProvider) ->
 	.when '/contacts',
 		templateUrl: '/views/contacts.html',
 		controller: 'ContactsCtrl'
+	.when '/contacts/:carId',
+		templateUrl: '/views/contacts.html',
+		controller: 'ContactsCtrl'
 	.otherwise
 		redirectTo: '/'
 
-	# see: http://ericduran.io/2013/05/31/angular-html5Mode-with-yeoman/
 	# $locationProvider.html5Mode(yes).hashPrefix('!')
