@@ -1,7 +1,7 @@
 html, body {
 	background-attachment: fixed;
 	background-color: $primary-color;
-	background-image: url(../images/bg/bg1.jpg);
+	background-image: url(../images/bg1.jpg);
 	background-size: cover;
 	overflow-x: hidden;
 }
@@ -54,7 +54,7 @@ $header-brand-spacing: 1px;
 
 #page-header {
 	position: relative;
-	background: $primary-color url(../images/bg/bg1.jpg);
+	background: $primary-color url(../images/bg1.jpg);
 	padding-top: $column-gutter/2;
 	padding-bottom: $column-gutter/2;
 	margin: 0 0 $column-gutter/2;
