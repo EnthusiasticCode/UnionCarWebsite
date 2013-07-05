@@ -142,9 +142,15 @@ angular.module('UnionCarWebsiteApp')
 			}
 		]
 
+	# Enable filtering change to update filter predicate
+	carListFilter = $('#carlist-filter')
+	carListFilter.on('change', (e) -> $scope.$apply(-> $scope.filter.predicates = e.val))
+
 	# Update carlist select2 filter when filter.select chagnes
 	$scope.$watch 'filter.select', (newSelect) ->
-		$('#carlist-filter').select2('destroy').select2
+		carListFilter.select2('destroy')
+		return if $scope.cars.length < 10
+		carListFilter.select2
 			tokenSeparators: [",", " "]
 			multiple: yes
 			query: Select2.query.local(newSelect)
@@ -161,9 +167,6 @@ angular.module('UnionCarWebsiteApp')
 				return "Fino a &euro; #{item.text}" if item.id.indexOf('maxPrice') == 0
 				return "Prodotta dal #{item.text}" if item.id.indexOf('minYear') == 0
 				item.text
-
-	# Enable filtering change to update filter predicate
-	$('#carlist-filter').on('change', (e) -> $scope.$apply(-> $scope.filter.predicates = e.val))
 
 # Italian translation for select2
 $.extend $.fn.select2.defaults,

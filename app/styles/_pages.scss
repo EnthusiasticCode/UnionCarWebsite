@@ -2,7 +2,11 @@
 // CarList
 ////////////////////////////////////////////////////////////////////////////////
 
-#carlist-filter, #s2id_carlist-filter {
+#carlist-filter {
+	display: none;
+}
+
+#s2id_carlist-filter {
 	margin-bottom: $column-gutter/2;
 }
 
@@ -10,7 +14,7 @@
 	top: 5px;
 }
 
-.select2-container-multi .select2-choices .select2-search-choice{
+.select2-container-multi .select2-choices .select2-search-choice {
 	padding: 4px 5px 4px 18px;
 	margin: 8px 0 3px 5px;
 }
