@@ -165,7 +165,7 @@ angular.module('UnionCarWebsiteApp')
 				markup.join("")
 			formatSelection: (item) ->
 				return "Fino a &euro; #{item.text}" if item.id.indexOf('maxPrice') == 0
-				return "Prodotta dal #{item.text}" if item.id.indexOf('minYear') == 0
+				return "Prodotta dal #{item.text} in poi" if item.id.indexOf('minYear') == 0
 				item.text
 
 # Italian translation for select2
