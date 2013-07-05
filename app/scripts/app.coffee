@@ -16,4 +16,4 @@ app.config ($routeProvider, $locationProvider) ->
 	.otherwise
 		redirectTo: '/'
 
-	# $locationProvider.html5Mode(yes).hashPrefix('!')
+	$locationProvider.html5Mode(yes).hashPrefix('!')
