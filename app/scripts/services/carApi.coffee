@@ -31,6 +31,7 @@ carFactory.$inject = ['$resource']
 
 parseCar = (car) ->
 	car.brand = car.brand.toLowerCase()
+	car.model = car.model.replace /\s+$/, ''
 
 	car.images = []
 	car.images.push c for i in [1..4] when c = car["image_url_#{i}"]
