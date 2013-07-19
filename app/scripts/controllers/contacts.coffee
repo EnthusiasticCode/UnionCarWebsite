@@ -16,7 +16,7 @@ window.loadContactsMaps = ->
 				position: results[0].geometry.location
 
 angular.module('UnionCarWebsiteApp')
-	.controller 'ContactsCtrl', ($scope) ->
+	.controller 'ContactsCtrl', ($scope, $routeParams, carApi) ->
 		# Loading Google Maps API if needed
 		unless google?.maps?
 			script = document.createElement("script")
@@ -39,3 +39,15 @@ angular.module('UnionCarWebsiteApp')
 					url: 'http://www.unioncar.it/cgi-bin/api/mail'
 					success: -> $scope.$apply ->
 						$scope.mail.status = "sent"
+
+		$scope.$on '$viewContentLoaded', ->
+			$('.contact-email').focus()
+			console.log $('.contact-email')
+
+		# Load default message if needed
+		if $routeParams.carId
+			carApi.get $routeParams.carId, (car) ->
+				$scope.mail.data.text = """Gentile Union Car,
+
+					Vorrei maggiori informazioni in merito alla '#{car.brand} #{car.model}'#{(car.date&&(' del '+car.date.getFullYear()))||''}.
+					In particolare:\n"""
