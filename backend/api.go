@@ -45,6 +45,7 @@ type Config struct {
 type ConfigColumnAlias struct {
 	TableColumn string
 	Alias       string
+	Transformer string
 }
 
 var (
@@ -61,7 +62,19 @@ var (
 		MailRecipient:      "info@example.com",
 		TableMapping:       nil,
 	}
-	logger *log.Logger
+	logger       *log.Logger
+	transformers = map[string]func(string) string{
+		"SiNo2Boolean": func(v string) string {
+			if strings.Contains(v, "SI") {
+				return "1"
+			}
+			return "0"
+		},
+		"EurDate2SQLDate": func(v string) string {
+			parts := strings.Split(v, "/")
+			return parts[2] + "-" + parts[1] + "-" + parts[0]
+		},
+	}
 )
 
 // CSV and Database elements
@@ -434,6 +447,9 @@ func updateDatabase() error {
 			for _, element := range elements {
 				values := make([]interface{}, 0, columnsCount)
 				for _, column := range config.TableMapping {
+					if column.Transformer != "" && transformers[column.Transformer] != nil {
+						element[column.Alias] = transformers[column.Transformer](element[column.Alias])
+					}
 					values = append(values, element[column.Alias])
 				}
 				_, err = insertQuery.Exec(values...)
