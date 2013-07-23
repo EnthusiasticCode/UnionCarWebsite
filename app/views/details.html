@@ -23,34 +23,38 @@
 				<ul class="details-list">
 					<li>
 						<div class="secondary radius label detail-label">Tipo</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="detail-value" ng-bind="car.car_type">&ndash;</div>
 					</li>
 					<li>
 						<div class="secondary radius label detail-label">Chilometraggio</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="detail-value"><span ng-bind="car.km|number">&ndash;</span> Km</div>
 					</li>
 					<li>
 						<div class="secondary radius label detail-label">Anno</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="detail-value" ng-bind="car.registration_date">&ndash;</div>
 					</li>
 					<li>
 						<div class="secondary radius label detail-label">Potenza</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="detail-value"><span ng-bind="car.power_kw|number">&ndash;</span> KW (<span ng-bind="car.power_horses|number">&ndash;</span> CV)</div>
 					</li>
 				</ul>
 				<h6>Ulteriori informazioni</h6>
 				<ul class="details-list">
 					<li>
-						<div class="secondary radius label detail-label">Tipo</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="secondary radius label detail-label">Colore</div>
+						<div class="detail-value" ng-bind="car.external_color|lowercase">&ndash;</div>
 					</li>
 					<li>
-						<div class="secondary radius label detail-label">Tipo</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="secondary radius label detail-label">Motore</div>
+						<div class="detail-value"><span ng-bind="car.engine_size|number">&ndash;</span> cc</div>
 					</li>
 					<li>
-						<div class="secondary radius label detail-label">Tipo</div>
-						<div class="detail-value">Coup&egrave;</div>
+						<div class="secondary radius label detail-label">Alimentazione</div>
+						<div class="detail-value" ng-bind="car.fuel_type">&ndash;</div>
+					</li>
+					<li>
+						<div class="secondary radius label detail-label">Cambio</div>
+						<div class="detail-value" ng-bind="car.gear_type">&ndash;</div>
 					</li>
 				</ul>
 			</div>

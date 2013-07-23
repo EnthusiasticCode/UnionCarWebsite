@@ -189,6 +189,7 @@
 
 			> .detail-value {
 				@include grid-column(8);
+				text-transform: capitalize;
 			}
 		}
 	}
