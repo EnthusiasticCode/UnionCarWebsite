@@ -29,24 +29,34 @@ carFactory = ($resource) ->
 	}
 carFactory.$inject = ['$resource']
 
+fuelTypes =
+	'B': 'benzina'
+	'D': 'disel'
+	'G': 'gpl'
+	'M': 'metano'
+	'I': 'idrogeno'
+
 parseCar = (car) ->
 	car.brand = car.brand.toLowerCase()
 	car.model = car.model.replace /\s+$/, ''
 
 	car.images = []
-	car.images.push c for i in [1..4] when c = car["image_url_#{i}"]
-	delete car.image_url_1
-	delete car.image_url_2
-	delete car.image_url_3
-	delete car.image_url_4
+	for i in [1..8] when c = car["image_url_#{i}"]
+		car.images.push c
+		delete car["image_url_#{i}"]
 
-	car.price = parseInt(car.price)
+	car.pubblic = car.pubblic == '1' if car.pubblic?
+	car.engine_size = parseInt(car.engine_size) if car.engine_size?
+	car.price = parseInt(car.price) if car.price?
+	car.km = parseInt(car.km) if car.km?
+	car.power_kw = parseInt(car.power_kw) if car.power_kw?
+	car.power_horses = parseInt(car.power_horses) if car.power_horses?
+	car.fuel_type = fuelTypes[car.fuel_type] if car.fuel_type?
 
-	if car.date == '0000-00-00'
-		car.date = null
+	if car.registration_date == '0000-00-00'
+		car.registration_date = null
 	else
-		car.date = car.date.split('-')
-		car.date = new Date(car.date[0], car.date[1] - 1, car.date[2])
+		car.registration_date = new Date(car.registration_date)
 
 	return car
 
