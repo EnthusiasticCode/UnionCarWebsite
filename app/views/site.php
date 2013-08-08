@@ -46,7 +46,15 @@
         </header>
 
         <section id="page-content" class="row">
-          <div class="small-12 columns" ng-view ng-animate="'view-animation'"></div>
+          <div class="small-12 columns" ng-view ng-animate="'view-animation'">
+          	<?php
+          		if ( $this->agent->is_robot() ) {
+          			$segment = $this->uri->segment(1);
+          			if ( !$segment ) $segment = 'carlist';
+          			$this->load->view($segment);
+          		}
+          	?>
+          </div>
         </section>
       </div>
 
