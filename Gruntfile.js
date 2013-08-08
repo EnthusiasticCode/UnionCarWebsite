@@ -29,8 +29,8 @@ module.exports = function (grunt) {
         tasks: ['compass']
       },
       views: {
-        files: ['<%= yeoman.app %>/views/*.php'],
-        tasks: ['htmlmin']
+        files: ['<%= yeoman.app %>/views/*.{php,html}'],
+        tasks: ['copy:develop']
       },
       styles: {
         files: ['{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css'],
@@ -130,27 +130,6 @@ module.exports = function (grunt) {
         }
       }
     },
-    htmlmin: {
-      dist: {
-        options: {
-          /*removeCommentsFromCDATA: true,
-          // https://github.com/yeoman/grunt-usemin/issues/44
-          //collapseWhitespace: true,
-          collapseBooleanAttributes: true,
-          removeAttributeQuotes: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true,
-          removeEmptyAttributes: true,
-          removeOptionalTags: true*/
-        },
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.app %>/views',
-          src: '*.php',
-          dest: '<%= yeoman.dist %>/views'
-        }]
-      }
-    },
     ngmin: {
       dist: {
         files: [{
@@ -178,6 +157,7 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.app %>',
           dest: '<%= yeoman.dist %>',
           src: [
+            'views/*.{php,html}',
             'images/{,*/}*.{gif,webp}',
             'config/*',
             'controllers/*',
@@ -191,7 +171,7 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.app %>',
           dest: '<%= yeoman.dist %>',
           src: [
-            'images/{,*/}*.{png,gif,webp}'
+            'views/*.{php,html}'
           ]
         }]
       }
@@ -205,7 +185,6 @@ module.exports = function (grunt) {
     'coffee:dist',
     'compass:develop',
     'imagemin',
-    'htmlmin',
     'cssmin',
     'concat',
     'copy',
@@ -217,7 +196,6 @@ module.exports = function (grunt) {
     'coffee',
     'compass:dist',
     'imagemin',
-    'htmlmin',
     'cssmin',
     'concat',
     'copy',
