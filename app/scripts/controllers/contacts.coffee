@@ -40,10 +40,6 @@ angular.module('UnionCarWebsiteApp')
 					success: -> $scope.$apply ->
 						$scope.mail.status = "sent"
 
-		$scope.$on '$viewContentLoaded', ->
-			$('.contact-email').focus()
-			console.log $('.contact-email')
-
 		# Load default message if needed
 		if $routeParams.carId
 			carApi.get $routeParams.carId, (car) ->
