@@ -60,7 +60,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/flexslider/2.1/jquery.flexslider-min.js"></script>
     <script src="<?php echo base_url(APPPATH.'/scripts/scripts.js'); ?>"></script>
     <script type="text/javascript">
-    angular.module('UnionCarWebsiteApp').constant('ci', {
+    angular.module('UnionCarWebsiteApp').constant('conf', {
     	baseUrl: "<?php echo rtrim(base_url(), '/'); ?>",
     	appUrl: "<?php echo base_url(APPPATH); ?>"
     });
