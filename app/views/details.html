@@ -15,7 +15,7 @@
 
 			<div class="small-12 large-5 columns">
 				<div class="description-container">
-					<p ng-bind="car.note"></p>
+					<p ng-bind="car.model_description"></p>
 				</div>
 				<div class="price-container">
 					<p>Prezzo al pubblico <span class="price">&euro; <strong ng-bind="car.price|number">&ndash;</strong></span></p>
@@ -31,7 +31,7 @@
 					</li>
 					<li>
 						<div class="secondary radius label detail-label">Anno</div>
-						<div class="detail-value" ng-bind="car.registration_date">&ndash;</div>
+						<div class="detail-value" ng-bind="car.registration_date|date:'MM/yyyy'">&ndash;</div>
 					</li>
 					<li>
 						<div class="secondary radius label detail-label">Potenza</div>
