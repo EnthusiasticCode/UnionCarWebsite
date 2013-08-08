@@ -1,17 +1,17 @@
 app = angular.module('UnionCarWebsiteApp', ['ngRoute', 'ngResource', 'angular-flexslider'])
 
-app.config ($routeProvider, $locationProvider, ci) ->
+app.config ($routeProvider, $locationProvider, conf) ->
 	$routeProvider.when '/',
-		templateUrl: "#{ci.appUrl}/views/carlist.php",
+		templateUrl: "#{conf.siteUrl}/views/carlist",
 		controller: 'CarListCtrl'
 	.when '/details/:id',
-		templateUrl: "#{ci.appUrl}/views/details.php",
+		templateUrl: "#{conf.siteUrl}/views/details",
 		controller: 'DetailsCtrl'
 	.when '/contacts',
-		templateUrl: "#{ci.appUrl}/views/contacts.php",
+		templateUrl: "#{conf.siteUrl}/views/contacts",
 		controller: 'ContactsCtrl'
 	.when '/contacts/:carId',
-		templateUrl: "#{ci.appUrl}/views/contacts.php",
+		templateUrl: "#{conf.siteUrl}/views/contacts",
 		controller: 'ContactsCtrl'
 	.otherwise
 		redirectTo: '/'
