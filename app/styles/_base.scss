@@ -26,6 +26,10 @@ a {
 	background-size: 36px;
 	min-height: 65px;
 	min-width: 38px;
+
+	.no-js & {
+		display: none;
+	}
 }
 
 $header-brand-spacing: 1px;
