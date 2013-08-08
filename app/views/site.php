@@ -4,7 +4,7 @@
   <head>
     <title>Union Car - Auto Nuove e Usate</title>
     <meta name="description" content="Auto nuove e usate a Mirano Venezia Italia.">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:100,300,700' type='text/css'>
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.0/select2.min.css">
