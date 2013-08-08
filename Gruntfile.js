@@ -1,10 +1,4 @@
 'use strict';
-var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
-var mountFolder = function (connect, dir) {
-  return connect.static(require('path').resolve(dir));
-};
-// See: http://ericduran.io/2013/05/31/angular-html5Mode-with-yeoman/
-var modRewrite = require('connect-modrewrite');
 
 module.exports = function (grunt) {
   // load all grunt tasks
@@ -17,7 +11,7 @@ module.exports = function (grunt) {
   };
 
   try {
-    yeomanConfig.app = require('./component.json').appPath || yeomanConfig.app;
+    yeomanConfig.app = require('./bower.json').appPath || yeomanConfig.app;
   } catch (e) {}
 
   grunt.initConfig({
@@ -28,44 +22,27 @@ module.exports = function (grunt) {
         tasks: ['coffee:dist']
       },
       compass: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+        files: [
+          '<%= yeoman.app %>/styles/{,*/}*.{scss,sass}',
+          '<%= yeoman.app %>/sprites/{,*/}*.png'
+        ],
         tasks: ['compass']
       },
-      livereload: {
-        files: [
-          '<%= yeoman.app %>/{,*/}*.html',
-          '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
-          '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
-          '{.tmp,<%= yeoman.app %>}/images/{,*/}*.png',
-          '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-        ],
-        tasks: ['livereload']
-      }
-    },
-    connect: {
-      options: {
-        port: 9000,
-        // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost'
+      views: {
+        files: ['<%= yeoman.app %>/views/*.php'],
+        tasks: ['htmlmin']
       },
-      livereload: {
-        options: {
-          middleware: function (connect) {
-            return [
-              modRewrite([
-                '!\\.html|\\.js|\\.css|\\.png|\\.jpg|\\.gif$ /index.html [L]'
-              ]),
-              lrSnippet,
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.app)
-            ];
-          }
-        }
+      styles: {
+        files: ['{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css'],
+        tasks: ['cssmin']
       },
-    },
-    open: {
-      server: {
-        url: 'http://localhost:<%= connect.options.port %>'
+      scripts: {
+        files: ['{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js'],
+        tasks: ['concat']
+      },
+      images: {
+        files: ['{.tmp,<%= yeoman.app %>}/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'],
+        tasks: ['imagemin']
       }
     },
     clean: {
@@ -79,16 +56,7 @@ module.exports = function (grunt) {
           ]
         }]
       },
-      server: '.tmp'
-    },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/{,*/}*.js'
-      ]
+      develop: '.tmp'
     },
     karma: {
       unit: {
@@ -111,15 +79,15 @@ module.exports = function (grunt) {
       options: {
         sassDir: '<%= yeoman.app %>/styles',
         cssDir: '.tmp/styles',
-        imagesDir: '<%= yeoman.app %>/images',
+        imagesDir: '<%= yeoman.app %>/sprites',
         javascriptsDir: '<%= yeoman.app %>/scripts',
         fontsDir: '<%= yeoman.app %>/styles/fonts',
         importPath: '<%= yeoman.app %>/components',
-        raw: 'http_images_path = "/images/"\ngenerated_images_dir = ".tmp/images"\nhttp_generated_images_path = "/images/"',
+        raw: 'http_images_path = "./sprites/"\ngenerated_images_dir = ".tmp/images"\nhttp_generated_images_path = "../images/"',
         relativeAssets: false
       },
       dist: {},
-      server: {
+      develop: {
         options: {
           debugInfo: true
         }
@@ -129,23 +97,12 @@ module.exports = function (grunt) {
       dist: {
         files: {
           '<%= yeoman.dist %>/scripts/scripts.js': [
-            '.tmp/scripts/{,*/}*.js',
-            '<%= yeoman.app %>/scripts/{,*/}*.js'
+            '<%= yeoman.app %>/scripts/angular/*.js',
+            '<%= yeoman.app %>/scripts/angular/modules/*.js',
+
+            '.tmp/scripts/{,*/}*.js'
           ]
         }
-      }
-    },
-    useminPrepare: {
-      html: '<%= yeoman.app %>/index.html',
-      options: {
-        dest: '<%= yeoman.dist %>'
-      }
-    },
-    usemin: {
-      html: ['<%= yeoman.dist %>/{,*/}*.html'],
-      css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-      options: {
-        dirs: ['<%= yeoman.dist %>']
       }
     },
     imagemin: {
@@ -188,9 +145,9 @@ module.exports = function (grunt) {
         },
         files: [{
           expand: true,
-          cwd: '<%= yeoman.app %>',
-          src: ['*.html', 'views/*.html'],
-          dest: '<%= yeoman.dist %>'
+          cwd: '<%= yeoman.app %>/views',
+          src: '*.php',
+          dest: '<%= yeoman.dist %>/views'
         }]
       }
     },
@@ -207,20 +164,8 @@ module.exports = function (grunt) {
     uglify: {
       dist: {
         files: {
-          '<%= yeoman.dist %>/scripts/angular.js': [
-            '<%= yeoman.dist %>/scripts/angular.js'
-          ]
-        }
-      }
-    },
-    rev: {
-      dist: {
-        files: {
-          src: [
-            '<%= yeoman.dist %>/scripts/{,*/}*.js',
-            '<%= yeoman.dist %>/styles/{,*/}*.css',
-            '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-            '<%= yeoman.dist %>/styles/fonts/*'
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '<%= yeoman.dist %>/scripts/scripts.js'
           ]
         }
       }
@@ -233,11 +178,20 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.app %>',
           dest: '<%= yeoman.dist %>',
           src: [
-            '*.{ico,txt}',
-            '.htaccess',
-            'components/**/*',
             'images/{,*/}*.{gif,webp}',
-            'styles/fonts/*'
+            'config/*',
+            'controllers/*',
+            'errors/*'
+          ]
+        }]
+      },
+      develop: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>',
+          dest: '<%= yeoman.dist %>',
+          src: [
+            'images/{,*/}*.{png,gif,webp}'
           ]
         }]
       }
@@ -246,13 +200,15 @@ module.exports = function (grunt) {
 
   grunt.renameTask('regarde', 'watch');
 
-  grunt.registerTask('server', [
-    'clean:server',
+  grunt.registerTask('develop', [
+    'clean:dist',
     'coffee:dist',
-    'compass:server',
-    'livereload-start',
-    'connect:livereload',
-    'open',
+    'compass:develop',
+    'imagemin',
+    'htmlmin',
+    'cssmin',
+    'concat',
+    'copy',
     'watch'
   ]);
 
@@ -260,16 +216,13 @@ module.exports = function (grunt) {
     'clean:dist',
     'coffee',
     'compass:dist',
-    'useminPrepare',
     'imagemin',
-    'cssmin',
     'htmlmin',
+    'cssmin',
     'concat',
     'copy',
     'ngmin',
-    'uglify',
-    'rev',
-    'usemin'
+    // 'uglify'
   ]);
 
   grunt.registerTask('default', ['build']);
