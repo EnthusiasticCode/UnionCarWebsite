@@ -17,3 +17,6 @@ app.config ($routeProvider, $locationProvider, conf) ->
 		redirectTo: '/'
 
 	$locationProvider.html5Mode(yes).hashPrefix('!')
+
+$ ->
+	$('html').removeClass('no-js')
