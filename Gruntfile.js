@@ -30,7 +30,7 @@ module.exports = function (grunt) {
       },
       views: {
         files: ['<%= yeoman.app %>/{views,controllers,models}/*.{php,html}'],
-        tasks: ['copy:develop']
+        tasks: ['copy:develop', 'concat:livereload']
       },
       styles: {
         files: ['{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css'],
@@ -43,6 +43,10 @@ module.exports = function (grunt) {
       images: {
         files: ['{.tmp,<%= yeoman.app %>}/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'],
         tasks: ['imagemin']
+      },
+      livereload: {
+        files: ['<%= yeoman.dist %>/{,*/}*'],
+        tasks: ['livereload']
       }
     },
     clean: {
@@ -103,6 +107,19 @@ module.exports = function (grunt) {
             '.tmp/scripts/{,*/}*.js'
           ]
         }
+      },
+      livereload: {
+        options: {
+          banner: [
+            "<script type=\"text/javascript\">document.write('<script src=\"http://'",
+            " + (location.host || 'localhost').split(':')[0]",
+            " + ':35729/livereload.js?snipver=1\" type=\"text/javascript\"><\\/script>')",
+            "</script>",
+            ""
+          ].join('\n')
+        },
+        src: ['<%= yeoman.dist %>/views/site.php'],
+        dest: '<%= yeoman.dist %>/views/site.php'
       }
     },
     imagemin: {
@@ -192,6 +209,7 @@ module.exports = function (grunt) {
     'cssmin',
     'concat',
     'copy',
+    'livereload-start',
     'watch'
   ]);
 
@@ -201,7 +219,7 @@ module.exports = function (grunt) {
     'compass:dist',
     'imagemin',
     'cssmin',
-    'concat',
+    'concat:dist',
     'copy',
     'ngmin',
     // 'uglify'
