@@ -51,7 +51,7 @@
           		if ( $this->agent->is_robot() ) {
           			$segment = $this->uri->segment(1);
           			if ( !$segment ) $segment = 'carlist';
-          			$this->load->view($segment);
+          			$this->load->view($segment, array( 'cars' => $cars ));
           		}
           	?>
           </div>

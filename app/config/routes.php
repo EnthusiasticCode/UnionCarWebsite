@@ -44,8 +44,8 @@ $route['404_override'] = '';
 $route['views/(:any)'] = 'site/views/$1';
 
 $route['contacts'] = 'site';
-$route['contacts/:num'] = 'site';
-$route['details/:num'] = 'site';
+$route['contacts/(:num)'] = 'site/index/$1';
+$route['details/(:num)'] = 'site/index/$1';
 
 
 /* End of file routes.php */

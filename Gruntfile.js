@@ -29,7 +29,7 @@ module.exports = function (grunt) {
         tasks: ['compass']
       },
       views: {
-        files: ['<%= yeoman.app %>/views/*.{php,html}'],
+        files: ['<%= yeoman.app %>/{views,controllers,models}/*.{php,html}'],
         tasks: ['copy:develop']
       },
       styles: {
@@ -161,7 +161,9 @@ module.exports = function (grunt) {
             'images/{,*/}*.{gif,webp}',
             'config/*',
             'controllers/*',
-            'errors/*'
+            'errors/*',
+            'core/*',
+            'models/*'
           ]
         }]
       },
@@ -171,7 +173,9 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.app %>',
           dest: '<%= yeoman.dist %>',
           src: [
-            'views/*.{php,html}'
+            'views/*.{php,html}',
+            'controllers/*',
+            'models/*'
           ]
         }]
       }
