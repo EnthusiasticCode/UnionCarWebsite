@@ -222,7 +222,7 @@ module.exports = function (grunt) {
     'concat:dist',
     'copy',
     'ngmin',
-    // 'uglify'
+    'uglify'
   ]);
 
   grunt.registerTask('default', ['build']);
