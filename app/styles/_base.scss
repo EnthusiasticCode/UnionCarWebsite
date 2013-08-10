@@ -102,9 +102,11 @@ $header-brand-spacing: 1px;
 
 #page-header-contacts {
 	text-align: center;
+	margin-top: $column-gutter/2;
 
 	@media #{$small} {
 		text-align: right;
+		margin-top: 0;
 	}
 
 	.button {
