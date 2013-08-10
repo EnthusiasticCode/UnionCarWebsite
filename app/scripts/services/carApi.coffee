@@ -31,7 +31,7 @@ carFactory.$inject = ['$resource']
 
 fuelTypes =
 	'B': 'benzina'
-	'D': 'disel'
+	'D': 'diesel'
 	'G': 'gpl'
 	'M': 'metano'
 	'I': 'idrogeno'
