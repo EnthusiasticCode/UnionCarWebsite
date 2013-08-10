@@ -21,7 +21,7 @@
 								ng-if="car.images.length"
 								class="carlist-image"
 								ng-src="/car-images/{{car.images[0]}}"
-								src="/car-images/<?php echo $car->image_url_1; ?>">
+								<?php if ($car->image_url_1): ?>src="/car-images/<?php echo $car->image_url_1; ?>"<?php endif; ?>>
 						</li>
 					</ul>
 				</div>
