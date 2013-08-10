@@ -4,11 +4,13 @@
 			<h3>Union Car S.r.l</h3>
 			<div class="row">
 				<div class="small-12 large-5 columns">
+					<a href="https://www.google.com/maps/preview#!q=Via+Cavin+di+Sala%2C+74%2C+Mirano%2C+30035+Province+of+Venice%2C+Italy&data=!4m10!1m9!4m8!1m3!1d340796!2d12.531552!3d45.467025!3m2!1i1440!2i730!4f13.1" target="_blank">
 					<ul class="vcard address">
 						<li class="street-address">Via Cavin di Sala 74</li>
 						<li class="locality">Mirano</li>
 						<li><span class="state">Venezia</span>, <span class="zip">30035</span></li>
 					</ul>
+					</a>
 				</div>
 				<div class="small-12 large-7 columns">
 					<ul class="vcard contacts">
