@@ -26,9 +26,10 @@
 
         <header id="page-header" class="row">
           <ul class="inline-list brand-list hide-for-small">
-            <li class="header-brand-ferrari"></li>
-            <li class="header-brand-volkswagen"></li>
+            <li class="header-brand-opel"></li>
             <li class="header-brand-mazda"></li>
+            <li class="header-brand-subaru"></li>
+            <li class="header-brand-seat"></li>
           </ul>
           <div class="large-4 small-12 columns">
             <h1 id="page-header-logo"><a class="link" href="/">Union Car</a></h1>
