@@ -72,6 +72,20 @@ $header-brand-spacing: 1px;
 			height: 45px;
 		}
 	}
+
+	.vcard {
+		border: none;
+		color: $page-color;
+		font-size: 0.68em;
+		margin: 1em 0 0 0;
+		padding: 0;
+	}
+
+	.logo-vcard {
+		position: absolute;
+		bottom: -5px;
+		left: 93px;
+	}
 }
 
 #page-header-logo {
@@ -109,22 +123,23 @@ $header-brand-spacing: 1px;
 		margin-top: 0;
 	}
 
+	> a {
+		display: inline-block;
+		color: white;
+		margin-bottom: 0.5em;
+	}
+
 	.button {
 		width: 100%;
 		padding: 0.5em 2em;
-		margin: 0;
 
 		@media #{$small} {
 			width: auto;
 		}
 	}
 
-	.vcard {
-		border: none;
-		color: $page-color;
+	.small {
 		font-size: 0.68em;
-		margin: 1em 0 0 0;
-		padding: 0;
 	}
 }
 

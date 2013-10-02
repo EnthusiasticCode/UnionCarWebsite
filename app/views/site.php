@@ -33,16 +33,16 @@
           </ul>
           <div class="large-4 small-12 columns">
             <h1 id="page-header-logo"><a class="link" href="/">Union Car</a></h1>
+            <ul class="vcard logo-vcard address contacts hide-for-small">
+              <li>Tel: <span class="phone-number">+39 041 570 3547</span></li>
+            </ul>
           </div>
           <div class="large-5 small-12 columns hide-for-small">
             <h2 id="page-header-slogan" class="subheader">Nuovo, Usato, Km&Oslash;</h2>
           </div>
           <div id="page-header-contacts" class="large-3 small-12 columns">
             <a href="/contacts" class="alert radius button">Dove Siamo</a>
-            <ul class="vcard address contacts hide-for-small">
-              <li class="address"><span class="street-address">Via Cavin di Sala 74</span>, <span class="locality">Mirano</span> <span class="state">(VE)</span></li>
-              <li>Tel: <span class="phone-number">+39 041 570 3547</span></li>
-            </ul>
+            <a href="/commercianti" class="small">Area commercianti</a>
           </div>
         </header>
 

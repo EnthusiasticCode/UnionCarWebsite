@@ -13,6 +13,9 @@ app.config ($routeProvider, $locationProvider, conf) ->
 	.when '/contacts/:carId',
 		templateUrl: "#{conf.baseUrl}/views/contacts",
 		controller: 'ContactsCtrl'
+	.when '/commercianti',
+		templateUrl: "#{conf.baseUrl}/views/commercianti",
+		controller: 'CommerciantiCtrl'
 	.otherwise
 		redirectTo: '/'
 
