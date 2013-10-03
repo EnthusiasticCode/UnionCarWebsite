@@ -1,4 +1,6 @@
 {
+	"SessionKey": "ASecretString",
+	"SessionName": "SessionName",
 	"ZipPath": "test/quattroruote/",
 	"CsvComma": ";",
 	"ImagesPath": "test/images/",
@@ -34,5 +36,6 @@
 		{"TableColumn": "power_horses", "Alias": "CAV" },
 		{"TableColumn": "power_kw", "Alias": "KW" },
 		{"TableColumn": "price", "Alias": "PrezzoV. Euro" }
-	]
+	],
+	"SpecialFields": ["price"]
 }

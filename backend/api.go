@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/bjarneh/latinx"
+	"github.com/gorilla/sessions"
 
 	"database/sql"
 	_ "github.com/EnthusiasticCode/mysql"
@@ -33,6 +34,8 @@ const (
 
 // Config object
 type Config struct {
+	SessionKey                       string
+	SessionName                      string
 	ZipPath                          string
 	CsvComma                         string
 	ImagesPath, ImagesExtension      string
@@ -40,6 +43,7 @@ type Config struct {
 	MailRecipient                    string
 	DatabaseConnection, TableName    string
 	TableMapping                     []ConfigColumnAlias
+	SpecialFields                    []string
 }
 
 type ConfigColumnAlias struct {
@@ -50,6 +54,8 @@ type ConfigColumnAlias struct {
 
 var (
 	config = Config{
+		SessionKey:         "SecretSessionKey",
+		SessionName:        "SessionName",
 		ZipPath:            "test/quattroruote/",
 		CsvComma:           ";",
 		ImagesPath:         "test/images/",
@@ -61,6 +67,7 @@ var (
 		SMTPPassword:       "pass",
 		MailRecipient:      "info@example.com",
 		TableMapping:       nil,
+		SpecialFields:      nil,
 	}
 	logger       *log.Logger
 	transformers = map[string]func(string) string{
@@ -111,6 +118,7 @@ func main() {
 	}
 
 	err = cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Connection", "close")
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Status", "200 OK")
 
@@ -148,6 +156,31 @@ func main() {
 			return
 		}
 
+		// Get logged user from session if present
+		cookieStore := sessions.NewCookieStore([]byte(config.SessionKey))
+		session, _ := cookieStore.Get(r, config.SessionName)
+		isLoggedInUser := session.Values["loggedIn"] == "special"
+
+		// POST api/login
+		if m, err := path.Match("login", p); m && err == nil {
+			r.ParseForm()
+			user := r.PostForm.Get("email")
+			pass := r.PostForm.Get("password")
+			authorized, err := isUserEnabled(user, pass)
+
+			if authorized {
+				session.Values["loggedIn"] = "special"
+				session.Save(r, w)
+				io.WriteString(w, "{\"login\": \"ok\"}")
+			} else if err != nil {
+				io.WriteString(w, "{\"login\": \"invalid\", \"error\": \""+err.Error()+"\"}")
+			} else {
+				io.WriteString(w, "{\"login\": \"invalid\"}")
+			}
+
+			return
+		}
+
 		// Update database if needed
 		updateIfNeeded()
 
@@ -155,7 +188,7 @@ func main() {
 
 		// GET api/car
 		if m, err := path.Match("car", p); m && err == nil {
-			cars, err := getCars()
+			cars, err := getCars(isLoggedInUser)
 			if err != nil {
 				outputError(w, err)
 			}
@@ -173,7 +206,7 @@ func main() {
 				outputError(w, err)
 			}
 
-			car, err := getCar(id)
+			car, err := getCar(id, isLoggedInUser)
 			if err != nil {
 				outputError(w, err)
 			}
@@ -206,8 +239,35 @@ func loadConfig(c *Config, path string) error {
 	return nil
 }
 
+// Get a value indicating if the user is enabled to see special fields
+func isUserEnabled(email string, password string) (bool, error) {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return false, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT authorized FROM users WHERE email=? AND password=?", email, password)
+	if err != nil {
+		logger.Fatalln(err)
+		return false, err
+	}
+
+	if !rows.Next() {
+		return false, nil
+	}
+
+	var authorized bool
+	if err = rows.Scan(&authorized); err != nil {
+		logger.Fatalln(err)
+		return false, err
+	}
+
+	return authorized, nil
+}
+
 // Load
-func mapQueryResults(rows *sql.Rows) ([]dbElement, error) {
+func mapQueryResults(rows *sql.Rows, includeSpecials bool) ([]dbElement, error) {
 	// Get column names
 	columns, err := rows.Columns()
 	if err != nil {
@@ -235,10 +295,20 @@ func mapQueryResults(rows *sql.Rows) ([]dbElement, error) {
 			return nil, err
 		}
 
-		// Now do something with the data.
-		// Here we just print each column as a string.
 		res := make(dbElement)
 		for i, col := range values {
+			if !includeSpecials && config.SpecialFields != nil {
+				shouldContinue := false
+				for _, s := range config.SpecialFields {
+					if s == columns[i] {
+						shouldContinue = true
+						break
+					}
+				}
+				if shouldContinue {
+					continue
+				}
+			}
 			if col == nil {
 				res[columns[i]] = nil
 			} else {
@@ -254,7 +324,7 @@ func mapQueryResults(rows *sql.Rows) ([]dbElement, error) {
 	return result, nil
 }
 
-func getCars() ([]dbElement, error) {
+func getCars(includeSpecial bool) ([]dbElement, error) {
 	db, err := sql.Open("mysql", config.DatabaseConnection)
 	if err != nil {
 		return nil, err
@@ -266,7 +336,7 @@ func getCars() ([]dbElement, error) {
 		return nil, err
 	}
 
-	mapRows, err := mapQueryResults(rows)
+	mapRows, err := mapQueryResults(rows, includeSpecial)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +344,7 @@ func getCars() ([]dbElement, error) {
 	return mapRows, nil
 }
 
-func getCar(id int) (dbElement, error) {
+func getCar(id int, includeSpecial bool) (dbElement, error) {
 	db, err := sql.Open("mysql", config.DatabaseConnection)
 	if err != nil {
 		return nil, err
@@ -286,7 +356,7 @@ func getCar(id int) (dbElement, error) {
 		return nil, err
 	}
 
-	mapRows, err := mapQueryResults(rows)
+	mapRows, err := mapQueryResults(rows, includeSpecial)
 	if err != nil {
 		return nil, err
 	}
