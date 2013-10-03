@@ -12,7 +12,7 @@
 								<label for="login-email" class="right inline">E-mail</label>
 							</div>
 							<div class="small-9 columns">
-								<input required ng-model="login.email" type="email" name="email" id="login-email">
+								<input required ng-model="login.email" type="email" name="email" id="login-email" ng-class="{ 'error':login.error }">
 							</div>
 						</div>
 						<div class="row">
@@ -20,7 +20,7 @@
 								<label for="login-password" class="right inline">Password</label>
 							</div>
 							<div class="small-9 columns">
-								<input required ng-model="login.password" type="password" name="password" id="login-password">
+								<input required ng-model="login.password" type="password" name="password" id="login-password" ng-class="{ 'error':login.error }">
 							</div>
 						</div>
 						<div class="row">
