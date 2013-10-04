@@ -126,12 +126,12 @@ $header-brand-spacing: 1px;
 	> a {
 		display: inline-block;
 		color: white;
-		margin-bottom: 0.5em;
 	}
 
 	.button {
 		width: 100%;
 		padding: 0.5em 2em;
+		margin: 1.1em 0 0.3em;
 
 		@media #{$small} {
 			width: auto;
