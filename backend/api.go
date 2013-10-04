@@ -262,6 +262,13 @@ func main() {
 			return
 		}
 
+		// GET /api/activate/<key>
+		if m, err := path.Match("activate/*", p); m && err == nil {
+			key := path.Base(p)
+			activateUserWithKey(key)
+			return
+		}
+
 		// Update database if needed
 		updateIfNeeded()
 
@@ -351,6 +358,35 @@ func registerUser(email string, password string) (string, error) {
 	}
 
 	return key, nil
+}
+
+// Activate a user from a key
+func activateUserWithKey(key string) error {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id FROM users WHERE auth_key=?", key)
+	if err != nil {
+		return err
+	}
+
+	if !rows.Next() {
+		return nil
+	}
+	var id int
+	if err = rows.Scan(&id); err != nil {
+		return err
+	}
+
+	_, err = db.Exec("UPDATE users SET authorized=1 WHERE id=?", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Get a value indicating if the user is enabled to see special fields
