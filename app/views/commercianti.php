@@ -34,7 +34,7 @@
 		</div>
 		<div class="small-12 large-6 columns">
 			<h4>Registrati come commerciante</h4>
-			<form name="registerForm" class="custom" novalidate ng-submit="register.send()">
+			<form name="registerForm" class="custom" novalidate ng-submit="register.register()">
 				<fieldset>
 					<legend>Dati personali</legend>
 					<div class="row">
@@ -42,7 +42,7 @@
 							<label for="register-name" class="right inline">Nome e cognome</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-name" required ng-model="register.name" type="text" name="name">
+							<input id="register-name" required ng-model="register.data.name" type="text" name="name">
 						</div>
 					</div>
 					<div class="row">
@@ -50,7 +50,7 @@
 							<label for="register-adderess" class="right inline">Indirizzo</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-adderess" required ng-model="register.adderess" type="text" name="adderess">
+							<input id="register-adderess" required ng-model="register.data.adderess" type="text" name="adderess">
 						</div>
 					</div>
 					<div class="row">
@@ -58,7 +58,7 @@
 							<label for="register-city" class="right inline">Città</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-city" required ng-model="register.city" type="text" name="city">
+							<input id="register-city" required ng-model="register.data.city" type="text" name="city">
 						</div>
 					</div>
 					<div class="row">
@@ -66,7 +66,7 @@
 							<label for="register-zip" class="right inline">CAP</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-zip" required ng-model="register.zip" type="text" name="zip">
+							<input id="register-zip" required ng-model="register.data.zip" type="text" name="zip">
 						</div>
 					</div>
 					<div class="row">
@@ -74,7 +74,7 @@
 							<label for="register-region" class="right inline">Provincia</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-region" required ng-model="register.region" type="text" name="region">
+							<input id="register-region" required ng-model="register.data.region" type="text" name="region">
 						</div>
 					</div>
 					<div class="row">
@@ -82,7 +82,7 @@
 							<label for="register-vat" class="right inline">Partita Iva</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-vat" required ng-model="register.vat" type="text" name="vat">
+							<input id="register-vat" required ng-model="register.data.vat" type="text" name="vat">
 						</div>
 					</div>
 				</fieldset>
@@ -93,7 +93,7 @@
 							<label for="register-email" class="right inline">E-mail</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-email" required ng-model="register.email" type="email" name="email">
+							<input id="register-email" required ng-model="register.data.email" type="email" name="email">
 						</div>
 					</div>
 					<div class="row">
@@ -101,15 +101,7 @@
 							<label for="register-password" class="right inline">Passowrd</label>
 						</div>
 						<div class="small-9 columns">
-							<input id="register-password" required ng-model="register.password" type="password" name="password">
-						</div>
-					</div>
-					<div class="row">
-						<div class="small-3 columns">
-							<label for="register-repassword" class="right inline">Ripeti password</label>
-						</div>
-						<div class="small-9 columns">
-							<input id="register-repassword" required ng-model="register.repassword" type="password" name="repassword">
+							<input id="register-password" required ng-model="register.data.password" type="password" name="password">
 						</div>
 					</div>
 					<div class="row">
@@ -127,13 +119,22 @@
 
 							<p>Ciò premesso, in mancanza di contrarie comunicazioni da parte Sua, consideriamo conferito a UNION CAR SRL il consenso all'utilizzo dei Suoi dati ai fini sopra indicati.</p>
 							</small>
-							<p><input type="checkbox" required ng-model="register.privacy" name="privacy"> Acconsento al trattamento dei dati personali</p>
+							<p><input type="checkbox" required ng-model="register.data.privacy" name="privacy"> Acconsento al trattamento dei dati personali</p>
 						</div>
 					</div>
 				</fieldset>
 				<div class="row">
+					<div class="small-12 columns" ng-switch="register.status">
+						<div ng-switch-when="loading" class="loading"></div>
+						<input ng-switch-when="" type="submit" value="Registrati" class="right register-submit small radius button" ng-class="{'disabled': !registerForm.$valid}">
+					</div>
+				</div>
+				<div class="row">
 					<div class="small-12 columns">
-						<input type="submit" value="Registrati" class="right register-submit small radius button" ng-class="{'disabled': !registerForm.$valid}">
+						<p ng-switch="register.status">
+							<span class="radius success label" ng-switch-when="ok">Registrazione avvenuta con successo</span>
+							<span class="radius error label" ng-switch-when="error">Errore nella reistrazione, si prega di riprovare più tardi</span>
+						</p>
 					</div>
 				</div>
 			</form>
