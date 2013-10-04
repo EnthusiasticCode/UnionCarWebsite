@@ -37,5 +37,8 @@
 		{"TableColumn": "power_kw", "Alias": "KW" },
 		{"TableColumn": "price", "Alias": "PrezzoV. Euro" }
 	],
-	"SpecialFields": ["price"]
+	"SpecialFields": ["price"],
+	"ActivationEmailTemplate": "activation key: {{.Key}}",
+	"NoticeEmailTemplate": "Request sent",
+	"ConfirmationEmailTemplate": "Account active"
 }

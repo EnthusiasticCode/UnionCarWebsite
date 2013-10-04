@@ -5,8 +5,12 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
+	"crypto/md5"
+	"crypto/rand"
 	"encoding/csv"
 	"encoding/json"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -44,6 +48,9 @@ type Config struct {
 	DatabaseConnection, TableName    string
 	TableMapping                     []ConfigColumnAlias
 	SpecialFields                    []string
+	ActivationEmailTemplate          string
+	NoticeEmailTemplate              string
+	ConfirmationEmailTemplate        string
 }
 
 type ConfigColumnAlias struct {
@@ -54,20 +61,23 @@ type ConfigColumnAlias struct {
 
 var (
 	config = Config{
-		SessionKey:         "SecretSessionKey",
-		SessionName:        "SessionName",
-		ZipPath:            "test/quattroruote/",
-		CsvComma:           ";",
-		ImagesPath:         "test/images/",
-		ImagesExtension:    ".jpg",
-		DatabaseConnection: "root:root@/unioncars",
-		TableName:          "cars",
-		SMTPHost:           "mail.example.com",
-		SMTPUser:           "user",
-		SMTPPassword:       "pass",
-		MailRecipient:      "info@example.com",
-		TableMapping:       nil,
-		SpecialFields:      nil,
+		SessionKey:                "SecretSessionKey",
+		SessionName:               "SessionName",
+		ZipPath:                   "test/quattroruote/",
+		CsvComma:                  ";",
+		ImagesPath:                "test/images/",
+		ImagesExtension:           ".jpg",
+		DatabaseConnection:        "root:root@/unioncars",
+		TableName:                 "cars",
+		SMTPHost:                  "mail.example.com",
+		SMTPUser:                  "user",
+		SMTPPassword:              "pass",
+		MailRecipient:             "info@example.com",
+		TableMapping:              nil,
+		SpecialFields:             nil,
+		ActivationEmailTemplate:   "activation key: {{.Key}}",
+		NoticeEmailTemplate:       "Request sent",
+		ConfirmationEmailTemplate: "Account active",
 	}
 	logger       *log.Logger
 	transformers = map[string]func(string) string{
@@ -118,7 +128,7 @@ func main() {
 	}
 
 	err = cgi.Serve(http.StripPrefix("/cgi-bin/api/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Connection", "close")
+		//w.Header().Set("Connection", "close")
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Status", "200 OK")
 
@@ -128,8 +138,7 @@ func main() {
 		if m, err := path.Match("mail", p); m && err == nil {
 			err = r.ParseForm()
 			if err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatalln(err)
+				outputError(w, err)
 			}
 			// see https://code.google.com/p/go-wiki/wiki/SendingMail
 			// Set up authentication information.
@@ -149,8 +158,7 @@ func main() {
 				[]byte(r.PostForm.Get("text")),
 			)
 			if err != nil {
-				io.WriteString(w, "{\"error\": \""+err.Error()+"\"}")
-				logger.Fatal(err)
+				outputError(w, err)
 			}
 			io.WriteString(w, "{\"status\": \"ok\", \"sender\": \""+r.PostForm.Get("sender")+"\"}")
 			return
@@ -178,6 +186,79 @@ func main() {
 				io.WriteString(w, "{\"login\": \"invalid\"}")
 			}
 
+			return
+		}
+
+		// POST api/register
+		if m, err := path.Match("register", p); m && err == nil {
+			r.ParseForm()
+			email := r.PostForm.Get("email")
+			pass := r.PostForm.Get("password")
+			if email == "" || pass == "" {
+				io.WriteString(w, "{\"registration\": \"error\", \"error\": \"Invalid data\"}")
+				return
+			}
+
+			key, err := registerUser(email, pass)
+			if err != nil {
+				io.WriteString(w, "{\"registration\": \"error\", \"error\": \""+err.Error()+"\"}")
+				return
+			}
+
+			user := struct {
+				Name    string
+				Address string
+				City    string
+				Zip     string
+				Region  string
+				Vat     string
+				Email   string
+				Key     string
+			}{
+				Name:    r.PostForm.Get("name"),
+				Address: r.PostForm.Get("address"),
+				City:    r.PostForm.Get("city"),
+				Zip:     r.PostForm.Get("zip"),
+				Region:  r.PostForm.Get("Region"),
+				Vat:     r.PostForm.Get("vat"),
+				Email:   email,
+				Key:     key,
+			}
+
+			auth := smtp.PlainAuth(
+				"",
+				config.SMTPUser,
+				config.SMTPPassword,
+				config.SMTPHost,
+			)
+
+			// Templates
+			activationTmpl, _ := template.New("activation").Parse(config.ActivationEmailTemplate)
+			noticeTmpl, _ := template.New("notice").Parse(config.NoticeEmailTemplate)
+
+			// Activation email
+			var activationContent bytes.Buffer
+			activationTmpl.Execute(&activationContent, user)
+			smtp.SendMail(
+				config.SMTPHost+":25",
+				auth,
+				r.PostForm.Get("email"),
+				[]string{config.MailRecipient},
+				activationContent.Bytes(),
+			)
+
+			// Notice email
+			var noticeContent bytes.Buffer
+			noticeTmpl.Execute(&noticeContent, user)
+			smtp.SendMail(
+				config.SMTPHost+":25",
+				auth,
+				config.MailRecipient,
+				[]string{r.PostForm.Get("email")},
+				noticeContent.Bytes(),
+			)
+
+			io.WriteString(w, "{\"registration\": \"ok\"}")
 			return
 		}
 
@@ -239,6 +320,39 @@ func loadConfig(c *Config, path string) error {
 	return nil
 }
 
+// Add user to the database and wait activation
+func registerUser(email string, password string) (string, error) {
+	db, err := sql.Open("mysql", config.DatabaseConnection)
+	if err != nil {
+		return "", err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id FROM users WHERE email=?", email)
+	if err != nil {
+		return "", err
+	}
+
+	if rows.Next() {
+		return "", nil
+	}
+
+	hash := md5.New()
+	io.WriteString(hash, email)
+	io.WriteString(hash, password)
+	randToken := make([]byte, 10)
+	io.ReadFull(rand.Reader, randToken)
+	io.WriteString(hash, string(randToken))
+	key := string(hash.Sum(nil))
+
+	_, err = db.Exec("INSERT INTO users (email, password, auth_key) VALUES (?, ?, ?)", email, password, key)
+	if err != nil {
+		return "", err
+	}
+
+	return key, nil
+}
+
 // Get a value indicating if the user is enabled to see special fields
 func isUserEnabled(email string, password string) (bool, error) {
 	db, err := sql.Open("mysql", config.DatabaseConnection)
@@ -249,7 +363,6 @@ func isUserEnabled(email string, password string) (bool, error) {
 
 	rows, err := db.Query("SELECT authorized FROM users WHERE email=? AND password=?", email, password)
 	if err != nil {
-		logger.Fatalln(err)
 		return false, err
 	}
 
@@ -259,7 +372,6 @@ func isUserEnabled(email string, password string) (bool, error) {
 
 	var authorized bool
 	if err = rows.Scan(&authorized); err != nil {
-		logger.Fatalln(err)
 		return false, err
 	}
 
