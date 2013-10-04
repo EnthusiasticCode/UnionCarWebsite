@@ -10,6 +10,7 @@ import (
 	"crypto/rand"
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -350,7 +351,7 @@ func registerUser(email string, password string) (string, error) {
 	randToken := make([]byte, 10)
 	io.ReadFull(rand.Reader, randToken)
 	io.WriteString(hash, string(randToken))
-	key := string(hash.Sum(nil))
+	key := fmt.Sprintf("%x", hash.Sum(nil))
 
 	_, err = db.Exec("INSERT INTO users (email, password, auth_key) VALUES (?, ?, ?)", email, password, key)
 	if err != nil {
