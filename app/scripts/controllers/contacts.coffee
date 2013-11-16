@@ -39,6 +39,8 @@ angular.module('UnionCarWebsiteApp')
 					url: 'http://www.unioncar.it/cgi-bin/api/mail'
 					success: -> $scope.$apply ->
 						$scope.mail.status = "sent"
+					error: -> $scope.$apply ->
+						$scope.mail.status = "error"
 
 		# Load default message if needed
 		if $routeParams.carId

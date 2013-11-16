@@ -32,6 +32,10 @@
 				<div ng-switch-when="sent">
 					<p>Grazie per averci contattato!</p>
 				</div>
+				<div ng-switch-when="error">
+					<p>Al momento non riusciamo ad inviare la tua richiesta!</p>
+					<a href="" ng-href="mailto:mirano@unioncar.it?subject=Richiesta da {{mail.data.sender}}&amp;body={{mail.data.text}}" class="radius button">Inviala via E-Mail</a>
+				</div>
 			</div>
 		</div>
 		<div class="small-12 large-6 columns">
