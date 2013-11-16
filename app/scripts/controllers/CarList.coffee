@@ -149,7 +149,6 @@ angular.module('UnionCarWebsiteApp')
 	# Update carlist select2 filter when filter.select chagnes
 	$scope.$watch 'filter.select', (newSelect) ->
 		carListFilter.select2('destroy')
-		return if $scope.cars.length < 10
 		carListFilter.select2
 			tokenSeparators: [",", " "]
 			multiple: yes
