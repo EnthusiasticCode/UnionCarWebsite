@@ -618,6 +618,7 @@ func updateDatabase() error {
 			c.Comma = rune(config.CsvComma[0])
 			c.FieldsPerRecord = -1
 			c.TrimLeadingSpace = false
+			c.TrailingComma = true
 			rs, err := c.ReadAll()
 			if err != nil {
 				return err
