@@ -42,7 +42,6 @@
           </div>
           <div id="page-header-contacts" class="large-3 small-12 columns">
             <a href="/contacts" class="alert radius button">Dove Siamo</a>
-            <a href="/commercianti" class="small">Area commercianti</a>
           </div>
         </header>
 
