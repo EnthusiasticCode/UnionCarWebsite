@@ -62,10 +62,13 @@ angular.module('UnionCarWebsiteApp')
 
 	# Update filter select from loaded cars
 	$scope.$watch 'cars', (newCars) ->
+		brands = {}
+		for c in newCars when b = (c.brand?[0].toUpperCase()+c.brand?[1..-1].toLowerCase())
+			brands[c.brand] = b
 		$scope.filter.select = [
 			{
 				text: 'Marca'
-				children: ({ id: "brand:#{b}", text: b } for c in newCars when b = (c.brand?[0].toUpperCase()+c.brand?[1..-1].toLowerCase()))
+				children: ({ id: "brand:#{b}", text: cb } for b, cb of brands).sort((a, b) -> a.text > b.text)
 			},
 			{
 				text: 'Prezzo fino a'
