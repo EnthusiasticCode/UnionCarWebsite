@@ -20,7 +20,7 @@
 					<p ng-bind="car.model_description"></p>
 				</div>
 				<div class="price-container">
-					<p>Prezzo al pubblico <strong class="price" ng-bind="car.price&&('&euro; ' + (car.price|number))||'trattabile'"><?php echo $car->price; ?></strong></p>
+					<p>Prezzo al pubblico <strong class="price" ng-bind="car.price&&('&euro; ' + (car.price|number))||'trattativa riservata'"><?php echo $car->price; ?></strong></p>
 				</div>
 				<ul class="details-list">
 					<li>

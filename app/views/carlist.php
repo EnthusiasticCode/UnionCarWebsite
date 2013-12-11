@@ -42,7 +42,7 @@
 								<p class="carlist-date">anno <strong ng-bind="car.registration_date|date:'MM/yyyy'"><?php echo $car->registration_date; ?></strong></p>
 							</li>
 							<li class="carlist-price-col">
-								<p class="carlist-price"><strong ng-bind="car.price&&('&euro; ' + (car.price|number))||'trattabile'"><?php echo $car->price; ?></strong></p>
+								<p class="carlist-price"><strong ng-bind="car.price&&('&euro; ' + (car.price|number))||'trattativa riservata'"><?php echo $car->price; ?></strong></p>
 							</li>
 						</ul>
 					</div>
