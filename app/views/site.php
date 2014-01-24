@@ -59,7 +59,7 @@
       </div>
 
       <footer id="site-footer" class="small-12 columns">
-        Copyright &copy; 2013 Union Car S.r.l
+        Copyright &copy; 2013 Union Car S.r.l &ndash; P.IVA: 04171990270
       </footer>
     </div>
 
