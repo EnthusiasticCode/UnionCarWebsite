@@ -1,8 +1,8 @@
 <!doctype html>
-<!--[if lt IE 9]>      <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html ng-app="UnionCarWebsiteApp">
   <head>
     <title>Union Car - Auto Nuove e Usate</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Auto nuove e usate a Mirano Venezia Italia.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -16,7 +16,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.1.0/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body ng-app="UnionCarWebsiteApp">
+  <body>
     <!--[if lt IE 9]>
       <p class="chromeframe">Stai usando un browser obsoleto. <a target="_blank" href="http://browsehappy.com/">Aggiorna il tuo browser oggi</a> o <a target="_blank" href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> per un'esperienza migliore.</p>
     <![endif]-->
