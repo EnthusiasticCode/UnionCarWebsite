@@ -39,7 +39,10 @@
 								<p class="carlist-type" ng-bind="car.car_type"><?php echo $car->car_type; ?></p>
 							</li>
 							<li class="carlist-date-col">
-								<p class="carlist-date">anno <strong ng-bind="car.registration_date|date:'MM/yyyy'"><?php echo $car->registration_date; ?></strong></p>
+								<p class="carlist-date" ng-switch="car.type">
+									<span ng-switch-when="new">Nuovo</span>
+									<span ng-switch-default>anno <strong ng-bind="car.registration_date|date:'MM/yyyy'"><?php echo $car->registration_date; ?></strong></span>
+								</p>
 							</li>
 							<li class="carlist-price-col">
 								<p class="carlist-price"><strong ng-bind="car.price&&('&euro; ' + (car.price|number))||'trattativa riservata'"><?php echo $car->price; ?></strong></p>
