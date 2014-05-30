@@ -27,11 +27,11 @@
 						<div class="secondary radius label detail-label">Tipo</div>
 						<div class="detail-value" ng-bind="car.car_type"><?php echo $car->car_type; ?></div>
 					</li>
-					<li>
+					<li ng-show="car.type != 'new'">
 						<div class="secondary radius label detail-label">Chilometraggio</div>
 						<div class="detail-value"><span ng-bind="car.km|number"><?php echo $car->km; ?></span> Km</div>
 					</li>
-					<li>
+					<li ng-show="car.type == 'old'">
 						<div class="secondary radius label detail-label">Anno</div>
 						<div class="detail-value" ng-bind="car.registration_date|date:'MM/yyyy'"><?php echo $car->registration_date; ?></div>
 					</li>
