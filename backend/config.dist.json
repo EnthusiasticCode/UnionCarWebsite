@@ -2,6 +2,7 @@
 	"SessionKey": "ASecretString",
 	"SessionName": "SessionName",
 	"ZipPath": "test/quattroruote/",
+	"ZipPrefixes": ["prefix"],
 	"CsvComma": ";",
 	"ImagesPath": "test/images/",
 	"ImagesExtension": ".jpg",
