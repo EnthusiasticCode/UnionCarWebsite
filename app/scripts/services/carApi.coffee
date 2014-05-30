@@ -37,6 +37,11 @@ fuelTypes =
 	'I': 'idrogeno'
 
 parseCar = (car) ->
+	switch car.file_source
+		when "0" then car.type = "old"
+		else car.type = "new"
+
+
 	car.brand = car.brand.toLowerCase()
 	car.model = car.model.replace /\s+$/, ''
 

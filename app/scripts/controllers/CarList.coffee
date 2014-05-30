@@ -28,6 +28,8 @@ angular.module('UnionCarWebsiteApp')
 				(template.texts or= []).push(otherComponents())
 			else if firstComponent() == "brand"
 				(template.brands or= []).push(otherComponents().toLowerCase())
+			else if firstComponent() == "type"
+				template.type = otherComponents()
 			else if firstComponent() == "maxPrice"
 				maxPrice = Number(otherComponents())
 				if (template.maxPrice or Infinity) > maxPrice
@@ -58,6 +60,8 @@ angular.module('UnionCarWebsiteApp')
 			return no
 		else if template.minYear? and car.date?.getFullYear() < template.minYear
 			return no
+		else if template.type? and car.type isnt template.type
+			return no
 		return yes
 
 	# Update filter select from loaded cars
@@ -66,6 +70,13 @@ angular.module('UnionCarWebsiteApp')
 		for c in newCars when b = (c.brand?[0].toUpperCase()+c.brand?[1..-1].toLowerCase())
 			brands[c.brand] = b
 		$scope.filter.select = [
+			{
+				text: 'Tipo'
+				children: [
+					{ id: 'type:new', text: 'Nuovo' }
+					{ id: 'type:old', text: 'Usato' }
+				]
+			},
 			{
 				text: 'Marca'
 				children: ({ id: "brand:#{b}", text: cb } for b, cb of brands).sort((a, b) -> a.text > b.text)
