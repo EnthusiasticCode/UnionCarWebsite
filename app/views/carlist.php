@@ -40,7 +40,7 @@
 							</li>
 							<li class="carlist-date-col">
 								<p class="carlist-date" ng-switch="car.type">
-									<span ng-switch-when="new">Nuovo</span>
+									<span ng-switch-when="new">da immatricolare</span>
 									<span ng-switch-default>anno <strong ng-bind="car.registration_date|date:'MM/yyyy'"><?php echo $car->registration_date; ?></strong></span>
 								</p>
 							</li>
