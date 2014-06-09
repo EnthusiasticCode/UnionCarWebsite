@@ -39,9 +39,7 @@
 			</div>
 		</div>
 		<div class="small-12 large-6 columns">
+			<img src="/application/images/location.jpg" alt="">
 		</div>
-	</div>
-	<div id="map-canvas">
-		<img src="/application/images/location.jpg" alt="">
 	</div>
 </article>
