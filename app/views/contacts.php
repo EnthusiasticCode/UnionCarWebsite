@@ -41,5 +41,7 @@
 		<div class="small-12 large-6 columns">
 		</div>
 	</div>
-	<div id="map-canvas"></div>
+	<div id="map-canvas">
+		<img src="/application/images/location.jpg" alt="">
+	</div>
 </article>
