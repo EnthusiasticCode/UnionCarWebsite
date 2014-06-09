@@ -1,10 +1,10 @@
 <!doctype html>
-<html ng-app="UnionCarWebsiteApp">
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="UnionCarWebsiteApp">
   <head>
-    <title>Union Car - Auto Nuove e Usate</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Union Car - Auto Nuove e Usate a Mirano</title>
     <meta name="description" content="Auto nuove e usate a Mirano Venezia Italia.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:100,300,700' type='text/css'>
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.0/select2.min.css">
