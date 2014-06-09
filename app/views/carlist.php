@@ -8,7 +8,7 @@
 
 	<?php foreach($cars as $car): ?>
 
-	<li ng-repeat="car in filteredCars = (cars|filter:carsFilterPredicate|orderBy:random)" ng-animate="'animation'" id="car-{{car.id}}">
+	<li ng-repeat="car in filteredCars = (cars|filter:carsFilterPredicate)" ng-animate="'animation'" id="car-{{car.id}}">
 		<a href="/details/<?php echo $car->id; ?>" ng-href="/details/{{car.id}}" class="carlist-link">
 			<div class="row">
 				<div class="small-3 columns">

@@ -1,18 +1,21 @@
 'use strict'
 
+shuffle = (a) ->
+	for i in [a.length-1..1]
+		j = Math.floor Math.random() * (i + 1)
+		[a[i], a[j]] = [a[j], a[i]]
+	a
+
 angular.module('UnionCarWebsiteApp')
 .controller 'CarListCtrl', ($scope, carApi) ->
 	$scope.cars = []
 	carApi.all (cars) ->
-		$scope.cars = cars
+		$scope.cars = shuffle(cars)
 
 	$scope.filter =
 		template: {}
 		predicates: []
 		select: []
-
-	# Random order for car list filter
-	$scope.random = -> 0.5 - Math.random()
 
 	# Update filter template
 	$scope.$watch "filter.predicates", (newValue, oldValue) ->
