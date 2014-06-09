@@ -24,4 +24,25 @@ class Site extends CI_Controller {
 		$this->load->view($view_name, array( 'cars' => array( new Cars() ) ));
 	}
 
+	public function mail() {
+		$this->load->library('email');
+
+		$this->email->from($this->input->post('sender'));
+		$this->email->to('info@unioncar.it');
+
+		$this->email->subject('[site] contact form');
+		$this->email->message($this->input->post('text'));
+
+		if ($this->email->send()) {
+			$this->output
+				->set_content_type('application/json')
+				->set_output(json_encode(array('status' => 'ok')));
+		} else {
+			$this->output
+				->set_header("HTTP/1.1 500 Internal Server Error")
+				->set_content_type('application/json')
+				->set_output(json_encode(array('error' => $this->email->print_debugger())));
+		}
+	}
+
 }

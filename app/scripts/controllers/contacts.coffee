@@ -11,7 +11,7 @@ angular.module('UnionCarWebsiteApp').controller 'ContactsCtrl', ($scope, $routeP
 			$.ajax
 				type: 'POST'
 				data: $scope.mail.data
-				url: 'http://www.unioncar.it/cgi-bin/api/mail'
+				url: 'http://www.unioncar.it/index.php/site/mail'
 				success: -> $scope.$apply ->
 					$scope.mail.status = "sent"
 				error: -> $scope.$apply ->
