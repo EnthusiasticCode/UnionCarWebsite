@@ -11,6 +11,9 @@ angular.module('UnionCarWebsiteApp')
 		predicates: []
 		select: []
 
+	# Random order for car list filter
+	$scope.random = -> 0.5 - Math.random()
+
 	# Update filter template
 	$scope.$watch "filter.predicates", (newValue, oldValue) ->
 		template = {}
@@ -202,3 +205,4 @@ $.extend $.fn.select2.defaults,
 
 	formatSearching: ->
 		"Ricerca..."
+
