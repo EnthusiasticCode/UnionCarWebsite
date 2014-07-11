@@ -1,9 +1,13 @@
 'use strict'
 
+# Fisher–Yates shuffle
 shuffle = (a) ->
-	for i in [a.length-1..1]
-		j = Math.floor Math.random() * (i + 1)
-		[a[i], a[j]] = [a[j], a[i]]
+	n = a.length
+	while n
+		i = Math.random() * n-- || 0
+		t = a[n]
+		a[n] = a[i]
+		a[i] = t
 	a
 
 angular.module('UnionCarWebsiteApp')
