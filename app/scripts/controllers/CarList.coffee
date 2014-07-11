@@ -4,7 +4,7 @@
 shuffle = (a) ->
 	n = a.length
 	while n
-		i = Math.random() * n-- || 0
+		i = Math.random() * n-- | 0
 		t = a[n]
 		a[n] = a[i]
 		a[i] = t
