@@ -42,6 +42,7 @@ type Config struct {
 	SessionKey                       string
 	SessionName                      string
 	ZipPath                          string
+	ZipPathKeep                      string
 	ZipPrefixes                      []string
 	CsvComma                         string
 	ImagesPath, ImagesExtension      string
@@ -66,6 +67,7 @@ var (
 		SessionKey:                "SecretSessionKey",
 		SessionName:               "SessionName",
 		ZipPath:                   "test/quattroruote/",
+		ZipPathKeep:               "",
 		ZipPrefixes:               nil,
 		CsvComma:                  ";",
 		ImagesPath:                "test/images/",
@@ -557,6 +559,7 @@ func getMostRecentFileWithPrefix(dir string, prefix string) (os.FileInfo, error)
 	sort.Sort(sort.Reverse(byModTime(infos)))
 	var info os.FileInfo = nil
 	for _, i := range infos {
+		fmt.Println(dir, prefix, i.Name())
 		if strings.HasPrefix(i.Name(), prefix) && strings.HasSuffix(i.Name(), ".zip") {
 			info = i
 			break
@@ -577,152 +580,162 @@ func updateDatabase() error {
 	}
 	defer db.Close()
 
-	for idx, prefix := range config.ZipPrefixes {
-		// Get most recent zip file to import
-		info, err := getMostRecentFileWithPrefix(config.ZipPath, prefix)
-		if err != nil || info == nil {
-			return err
+	// Delete zip files when done
+	defer func() {
+		if err != nil {
+			return // do not delete anything if import failed
 		}
+		// Delete all files listed earlier
+		infos, _ := ioutil.ReadDir(config.ZipPath)
+		for _, info := range infos {
+			os.Remove(config.ZipPath + info.Name())
+		}
+	}()
 
-		// Drop old table
-		if idx == 0 {
-			_, err = db.Exec("TRUNCATE TABLE " + config.TableName)
+	for idx, prefix := range config.ZipPrefixes {
+
+		for dirIdx, zipPath := range [2]string{config.ZipPath, config.ZipPathKeep} {
+
+			// Get most recent zip file to import
+			info, err := getMostRecentFileWithPrefix(zipPath, prefix)
 			if err != nil {
 				return err
 			}
-		}
-
-		// Unzip archive
-		archive, err := zip.OpenReader(config.ZipPath + info.Name())
-		if err != nil {
-			return err
-		}
-		defer archive.Close()
-		// defer func() {
-		// 	if err != nil {
-		// 		return // do not delete anything if import failed
-		// 	}
-		// 	// Delete all files listed earlier
-		// 	infos, _ := ioutil.ReadDir(config.ZipPath)
-		// 	for _, info = range infos {
-		// 		os.Remove(config.ZipPath + info.Name())
-		// 	}
-		// }()
-
-		// Reading files in archive
-		for _, f := range archive.File {
-			if strings.HasPrefix(filepath.Base(f.Name), ".") {
+			if info == nil {
 				continue
 			}
 
-			if strings.HasSuffix(f.Name, ".csv") {
-
-				// Reading CSV file
-				ff, err := f.Open()
+			// Drop old table
+			if dirIdx == 0 && idx == 0 {
+				_, err = db.Exec("TRUNCATE TABLE " + config.TableName)
 				if err != nil {
 					return err
 				}
-
-				// Reader from ISO-8859-1
-				// HAX add `converter.latinToUtf8[151] = []byte("-")` to latinx/part1.go
-				ffutf8 := latinx.NewReader(latinx.ISO_8859_1, ff)
-
-				// Open CSV reader
-				c := csv.NewReader(ffutf8)
-				c.Comma = rune(config.CsvComma[0])
-				c.FieldsPerRecord = -1
-				c.TrimLeadingSpace = false
-				c.TrailingComma = true
-				rs, err := c.ReadAll()
-				if err != nil {
-					return err
-				}
-
-				// Convert csv to slice of csvElement
-				elements := make([]csvElement, 0, 50)
-				var columns []string
-				for i, r := range rs {
-					if i == 0 {
-						// Columns
-						columns = r
-					} else {
-						// Content
-						element := make(csvElement)
-						for c, cv := range r {
-							element[columns[c]] = cv
-						}
-						elements = append(elements, element)
-					}
-				}
-				ff.Close()
-
-				// Prepare query string and put csvElements in database
-				columnsCount := len(config.TableMapping)
-				for _, element := range elements {
-					insertQueryString := "INSERT INTO " + config.TableName + " (file_source,"
-					values := make([]interface{}, 0, columnsCount+1)
-					values = append(values, idx)
-					for _, column := range config.TableMapping {
-						// Check if the element has the column
-						if _, exist := element[column.Alias]; exist == false {
-							continue
-						}
-						// Insert in query
-						insertQueryString += column.TableColumn + ","
-						// Transform the column value and store it
-						if column.Transformer != "" && transformers[column.Transformer] != nil {
-							element[column.Alias] = transformers[column.Transformer](element[column.Alias])
-						}
-						values = append(values, element[column.Alias])
-					}
-					// Finalise query string and create query
-					insertQueryString = strings.TrimRight(insertQueryString, ",")
-					insertQueryString += ") VALUES ("
-					valuesCount := len(values)
-					for i := 0; i < valuesCount; i++ {
-						insertQueryString += "?"
-						if i+1 < valuesCount {
-							insertQueryString += ","
-						}
-					}
-					insertQueryString += ")"
-					insertQuery, err := db.Prepare(insertQueryString)
-					if err != nil {
-						return err
-					}
-					// Execute insertion
-					_, err = insertQuery.Exec(values...)
-					if err != nil {
-						return err
-					}
-					insertQuery.Close()
-				}
-			} else if strings.HasSuffix(strings.ToLower(f.Name), config.ImagesExtension) {
-
-				// Create direcotry
-				dir := filepath.Dir(f.Name)
-				if len(dir) > 0 {
-					err = os.MkdirAll(config.ImagesPath+filepath.Dir(f.Name), os.FileMode(0777))
-					if err != nil {
-						return err
-					}
-				}
-
-				// Extract image
-				ff, err := f.Open()
-				if err != nil {
-					return err
-				}
-				dest, err := os.Create(config.ImagesPath + f.Name)
-				if err != nil {
-					return err
-				}
-				_, err = io.Copy(dest, ff)
-				if err != nil {
-					return err
-				}
-				ff.Close()
 			}
+
+			// Unzip archive
+			archive, err := zip.OpenReader(zipPath + info.Name())
+			if err != nil {
+				return err
+			}
+			defer archive.Close()
+
+			// Reading files in archive
+			for _, f := range archive.File {
+				if strings.HasPrefix(filepath.Base(f.Name), ".") {
+					continue
+				}
+
+				if strings.HasSuffix(f.Name, ".csv") {
+
+					// Reading CSV file
+					ff, err := f.Open()
+					if err != nil {
+						return err
+					}
+
+					// Reader from ISO-8859-1
+					// HAX add `converter.latinToUtf8[151] = []byte("-")` to latinx/part1.go
+					ffutf8 := latinx.NewReader(latinx.ISO_8859_1, ff)
+
+					// Open CSV reader
+					c := csv.NewReader(ffutf8)
+					c.Comma = rune(config.CsvComma[0])
+					c.FieldsPerRecord = -1
+					c.TrimLeadingSpace = false
+					c.TrailingComma = true
+					rs, err := c.ReadAll()
+					if err != nil {
+						return err
+					}
+
+					// Convert csv to slice of csvElement
+					elements := make([]csvElement, 0, 50)
+					var columns []string
+					for i, r := range rs {
+						if i == 0 {
+							// Columns
+							columns = r
+						} else {
+							// Content
+							element := make(csvElement)
+							for c, cv := range r {
+								element[columns[c]] = cv
+							}
+							elements = append(elements, element)
+						}
+					}
+					ff.Close()
+
+					// Prepare query string and put csvElements in database
+					columnsCount := len(config.TableMapping)
+					for _, element := range elements {
+						insertQueryString := "INSERT INTO " + config.TableName + " (file_source,"
+						values := make([]interface{}, 0, columnsCount+1)
+						values = append(values, idx)
+						for _, column := range config.TableMapping {
+							// Check if the element has the column
+							if _, exist := element[column.Alias]; exist == false {
+								continue
+							}
+							// Insert in query
+							insertQueryString += column.TableColumn + ","
+							// Transform the column value and store it
+							if column.Transformer != "" && transformers[column.Transformer] != nil {
+								element[column.Alias] = transformers[column.Transformer](element[column.Alias])
+							}
+							values = append(values, element[column.Alias])
+						}
+						// Finalise query string and create query
+						insertQueryString = strings.TrimRight(insertQueryString, ",")
+						insertQueryString += ") VALUES ("
+						valuesCount := len(values)
+						for i := 0; i < valuesCount; i++ {
+							insertQueryString += "?"
+							if i+1 < valuesCount {
+								insertQueryString += ","
+							}
+						}
+						insertQueryString += ")"
+						insertQuery, err := db.Prepare(insertQueryString)
+						if err != nil {
+							return err
+						}
+						// Execute insertion
+						_, err = insertQuery.Exec(values...)
+						if err != nil {
+							return err
+						}
+						insertQuery.Close()
+					}
+				} else if strings.HasSuffix(strings.ToLower(f.Name), config.ImagesExtension) {
+
+					// Create direcotry
+					dir := filepath.Dir(f.Name)
+					if len(dir) > 0 {
+						err = os.MkdirAll(config.ImagesPath+filepath.Dir(f.Name), os.FileMode(0777))
+						if err != nil {
+							return err
+						}
+					}
+
+					// Extract image
+					ff, err := f.Open()
+					if err != nil {
+						return err
+					}
+					dest, err := os.Create(config.ImagesPath + f.Name)
+					if err != nil {
+						return err
+					}
+					_, err = io.Copy(dest, ff)
+					if err != nil {
+						return err
+					}
+					ff.Close()
+				}
+			}
+
 		}
 	}
 
