@@ -40,8 +40,13 @@
           <div class="large-5 small-12 columns hide-for-small">
             <h2 id="page-header-slogan" class="subheader">Nuovo, Usato, Km&Oslash;</h2>
           </div>
-          <div id="page-header-contacts" class="large-3 small-12 columns">
+          <div id="page-header-contacts" class="large-2 small-12 columns">
             <a href="/contacts" class="alert radius button">Dove Siamo</a>
+          </div>
+          <div class="large-1 small-12 columns">
+            <a href="http://drmotor.it" target="_blank">
+              <img src="/application/images/dr_logo.png" alt="DR" style="width:100%;margin-top:9px">
+            </a>
           </div>
         </header>
 

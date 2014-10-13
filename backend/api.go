@@ -94,6 +94,9 @@ var (
 		},
 		"EurDate2SQLDate": func(v string) string {
 			parts := strings.Split(v, "/")
+			if len(parts) < 3 {
+				return v
+			}
 			return parts[2] + "-" + parts[1] + "-" + parts[0]
 		},
 		"CleanName": func(v string) string {
@@ -559,7 +562,6 @@ func getMostRecentFileWithPrefix(dir string, prefix string) (os.FileInfo, error)
 	sort.Sort(sort.Reverse(byModTime(infos)))
 	var info os.FileInfo = nil
 	for _, i := range infos {
-		fmt.Println(dir, prefix, i.Name())
 		if strings.HasPrefix(i.Name(), prefix) && strings.HasSuffix(i.Name(), ".zip") {
 			info = i
 			break
@@ -594,7 +596,7 @@ func updateDatabase() error {
 
 	for idx, prefix := range config.ZipPrefixes {
 
-		for dirIdx, zipPath := range [2]string{config.ZipPath, config.ZipPathKeep} {
+		for folderIdx, zipPath := range [2]string{config.ZipPath, config.ZipPathKeep} {
 
 			// Get most recent zip file to import
 			info, err := getMostRecentFileWithPrefix(zipPath, prefix)
@@ -605,12 +607,13 @@ func updateDatabase() error {
 				continue
 			}
 
+			// Calculate file_source
+			file_source := idx + 10*folderIdx
+
 			// Drop old table
-			if dirIdx == 0 && idx == 0 {
-				_, err = db.Exec("TRUNCATE TABLE " + config.TableName)
-				if err != nil {
-					return err
-				}
+			_, err = db.Exec(fmt.Sprintf("DELETE FROM %v WHERE file_source=%v", config.TableName, file_source))
+			if err != nil {
+				return err
 			}
 
 			// Unzip archive
@@ -672,7 +675,7 @@ func updateDatabase() error {
 					for _, element := range elements {
 						insertQueryString := "INSERT INTO " + config.TableName + " (file_source,"
 						values := make([]interface{}, 0, columnsCount+1)
-						values = append(values, idx)
+						values = append(values, file_source)
 						for _, column := range config.TableMapping {
 							// Check if the element has the column
 							if _, exist := element[column.Alias]; exist == false {
